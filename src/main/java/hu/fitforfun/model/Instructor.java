@@ -21,5 +21,7 @@ public class Instructor implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String firstName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private SportFacility sportFacility;
 
 }

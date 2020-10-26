@@ -5,4 +5,3 @@ sudo: false # faster builds
 
 script:
   - mvn clean install
-  - mvn checkstyle:check

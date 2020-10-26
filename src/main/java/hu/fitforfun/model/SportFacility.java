@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,6 @@ public class SportFacility {
     @NotNull
     @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "sportFacility", cascade = CascadeType.ALL)
+    private List<Instructor> instructors;
 }
