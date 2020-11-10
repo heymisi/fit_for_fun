@@ -1,0 +1,13 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+
+
+@font-face{
+    font-family: 'Playfair Display';
+    src: url(/assets/fonts/static/PlayfairDisplay-Regular.ttf) format("truetype")
+}
+
+body{
+    font-family: 'Playfair Display', sans-serif;
+    padding-top:56px
+}
