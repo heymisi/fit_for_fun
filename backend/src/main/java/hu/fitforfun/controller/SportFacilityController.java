@@ -1,14 +1,13 @@
 package hu.fitforfun.controller;
 
-        import hu.fitforfun.model.Instructor;
-        import hu.fitforfun.model.SportFacility;
-        import hu.fitforfun.repository.InstructorRepository;
-        import hu.fitforfun.repository.SportFacilityRepository;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.http.ResponseEntity;
-        import org.springframework.web.bind.annotation.*;
+import hu.fitforfun.model.Instructor;
+import hu.fitforfun.model.SportFacility;
+import hu.fitforfun.repositories.SportFacilityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-        import java.util.Optional;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController

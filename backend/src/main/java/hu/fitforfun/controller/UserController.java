@@ -1,7 +1,7 @@
 package hu.fitforfun.controller;
 
 import hu.fitforfun.model.User;
-import hu.fitforfun.repository.UserRepository;
+import hu.fitforfun.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

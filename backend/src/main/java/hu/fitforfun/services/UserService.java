@@ -1,4 +1,4 @@
-package hu.fitforfun.service;
+package hu.fitforfun.services;
 
 import hu.fitforfun.model.User;
 

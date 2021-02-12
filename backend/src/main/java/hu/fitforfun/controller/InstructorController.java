@@ -2,9 +2,7 @@ package hu.fitforfun.controller;
 
 import hu.fitforfun.model.Instructor;
 import hu.fitforfun.model.SportFacility;
-import hu.fitforfun.model.User;
-import hu.fitforfun.repository.InstructorRepository;
-import hu.fitforfun.repository.UserRepository;
+import hu.fitforfun.repositories.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

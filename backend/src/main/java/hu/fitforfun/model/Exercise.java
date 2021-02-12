@@ -1,24 +1,28 @@
 package hu.fitforfun.model;
 
+import hu.fitforfun.enums.Difficulty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Entity
 @Table(name = "exercise_table")
-public class Exercise implements Serializable {
+public class Exercise extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     private String name;
 
+    private List<SportType> sports;
+
+    @Enumerated
+    private Difficulty difficulty;
+
+    private List<Comment> comments;
 }

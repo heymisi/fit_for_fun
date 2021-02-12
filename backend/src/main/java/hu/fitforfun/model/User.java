@@ -1,13 +1,12 @@
 package hu.fitforfun.model;
 
-import com.sun.istack.NotNull;
+import hu.fitforfun.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -15,21 +14,27 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Entity
 @Table(name = "user_table")
-public class User implements Serializable {
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @NotNull
-    @Column(name = "username")
-    private String userName;/*
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String birthDate;
-        private String address;
-        private String password;
-        @Enumerated
-        private Role role;
-*/
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "email_address", nullable = false)
+    private String email;
+
+    @Column(name = "birth_date", nullable = false)
+    private String birthDate;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
 }

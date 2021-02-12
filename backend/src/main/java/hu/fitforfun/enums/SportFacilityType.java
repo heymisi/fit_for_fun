@@ -1,4 +1,4 @@
-package hu.fitforfun.model;
+package hu.fitforfun.enums;
 
 public enum SportFacilityType {
     GYM("Gym"),

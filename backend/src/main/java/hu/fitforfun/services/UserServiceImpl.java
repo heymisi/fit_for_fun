@@ -1,7 +1,7 @@
-package hu.fitforfun.service;
+package hu.fitforfun.services;
 
 import hu.fitforfun.model.User;
-import hu.fitforfun.repository.UserRepository;
+import hu.fitforfun.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> listUsers() {
-        return userRepository.findAll();
     }
 
 }

@@ -1,8 +1,9 @@
-package hu.fitforfun.model;
+package hu.fitforfun.enums;
 
 public enum UserRole {
     GUEST("Guest"),
     USER("User"),
+    INSTRUCTOR("Instructor"),
     ADMIN("Admin");
 
     private String name;
