@@ -10,13 +10,12 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "instructor_table")
-public class Instructor extends User {
+public class Instructor extends BaseEntity {
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+/*    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_facility_id")
     private SportFacility sportFacility;
 
@@ -26,6 +25,6 @@ public class Instructor extends User {
     @OneToOne(cascade = CascadeType.ALL)
     private Rating rate;
 
-    private List<Comment> comments;
+    private List<Comment> comments;*/
 
 }

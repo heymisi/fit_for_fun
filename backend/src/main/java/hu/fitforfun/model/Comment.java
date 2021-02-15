@@ -24,4 +24,8 @@ public class Comment extends BaseEntity {
     @Lob
     @Column(name = "text")
     private String text;
+
+    @ManyToOne
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
 }

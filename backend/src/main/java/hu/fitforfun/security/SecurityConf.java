@@ -1,4 +1,4 @@
-/*
+
 package hu.fitforfun.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,39 +8,44 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
-@EnableGlobalMethodSecurity(securedEnabled = true)
+//@EnableGlobalMethodSecurity(securedEnabled = true)
 @Configuration
 public class SecurityConf extends WebSecurityConfigurerAdapter {
 
+
+
+/*
     @Autowired
     public void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("sfjuser")
+                .withUser("user")
                 .password("{noop}pass")
                 .roles("USER")
                 .and()
-                .withUser("sfjadmin")
+                .withUser("admin")
                 .password("{noop}pass")
                 .roles("ADMIN");
     }
+*/
+
+
 
 
     @Override
     protected void configure(HttpSecurity httpSec) throws Exception {
-        httpSec
+        httpSec  .cors()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
-                .anyRequest().permitAll()
-                .and()
-                .formLogin()
-                .loginPage("/login")
+                .anyRequest()
                 .permitAll()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/login?logout")
-                .permitAll();
+                .and().csrf().disable();
+
     }
 }
-*/
+

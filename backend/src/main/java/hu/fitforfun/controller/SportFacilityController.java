@@ -63,7 +63,7 @@ public class SportFacilityController {
         return ResponseEntity.ok(sportFacilityRepository.save(instToUpdate));
     }
 
-    @GetMapping("/{id}/instructors")
+    /*@GetMapping("/{id}/instructors")
     public ResponseEntity<Iterable<Instructor>> getInstructors(@PathVariable Long id) {
         Optional<SportFacility> facility = sportFacilityRepository.findById(id);
         if (facility.isPresent()) {
@@ -71,7 +71,7 @@ public class SportFacilityController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 }
 
 

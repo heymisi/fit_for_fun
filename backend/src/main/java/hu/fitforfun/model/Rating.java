@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "rating_table")
 public class Rating extends BaseEntity {
 
-    @Column(name = "value")
+    @Column(name = "rating_value")
     private double value;
 
     @Column(name = "rated_by")

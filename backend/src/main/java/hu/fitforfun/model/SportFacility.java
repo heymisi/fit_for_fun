@@ -20,7 +20,7 @@ public class SportFacility extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "available_sports")
+   /* @Column(name = "available_sports")
     private List<SportType> availableSports;
 
     @OneToMany(mappedBy = "sportFacility", cascade = CascadeType.ALL)
@@ -31,5 +31,5 @@ public class SportFacility extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private Rating rate;
 
-    private List<Comment> comments;
+    private List<Comment> comments;*/
 }

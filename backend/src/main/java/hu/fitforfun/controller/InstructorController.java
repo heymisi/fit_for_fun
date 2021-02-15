@@ -49,7 +49,7 @@ public class InstructorController {
 
         return ResponseEntity.ok().build();
     }
-
+/*
     @PutMapping("/{id}")
     public ResponseEntity<Instructor> put(@PathVariable Long id, @RequestBody Instructor instructor) {
         Optional<Instructor> found = instructorRepository.findById(id);
@@ -61,15 +61,15 @@ public class InstructorController {
             instToUpdate.setFirstName(instructor.getFirstName());
         }
         return ResponseEntity.ok(instructorRepository.save(instToUpdate));
-    }
+    }*/
 
-    @GetMapping("/{id}/sportfacility")
+    /*@GetMapping("/{id}/sportfacility")
     public ResponseEntity<SportFacility> sportFacilityResponseEntity(@PathVariable Long id) {
         Optional<Instructor> inst = instructorRepository.findById(id);
         if (inst.isPresent()) {
-            return ResponseEntity.ok(inst.get().getSportFacility());
+            return ResponseEntity.ok();
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 }

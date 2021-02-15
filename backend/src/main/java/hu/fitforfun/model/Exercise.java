@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
@@ -17,12 +15,17 @@ import java.util.List;
 @Table(name = "exercise_table")
 public class Exercise extends BaseEntity {
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "sports")
+    @OneToMany( mappedBy = "exercise")
     private List<SportType> sports;
 
     @Enumerated
     private Difficulty difficulty;
 
+    @Column(name = "comments")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "exercise")
     private List<Comment> comments;
 }
