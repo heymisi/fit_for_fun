@@ -1,5 +1,6 @@
 insert into rating_table(rating_value, rated_by) VALUES (5.5, 5);
-insert into user_table (first_name) VALUES ('Krisz');
+
+insert into user_table (first_name,email_address,password) VALUES ('Krisz','email','123');
 
 --insert into user_table (id, username) VALUES (6, 'Krisz');
 

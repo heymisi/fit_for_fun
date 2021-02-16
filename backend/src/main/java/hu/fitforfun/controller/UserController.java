@@ -29,7 +29,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("")
+    @PostMapping({"","/"})
     public Response saveUser(@RequestBody User user) {
         try {
             return Response.createOKResponse(userService.createUser(user));

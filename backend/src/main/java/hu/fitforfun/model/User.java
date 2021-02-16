@@ -18,6 +18,18 @@ public class User extends BaseEntity {
     @Column(name = "first_name")
     private String firstName;
 
+    @Column(name = "email_address", unique = true, nullable = false)
+    private String email;
+
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    @Column(name = "email_verification_status")
+    private Boolean emailVerificationStatus = false;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
  /*   @Column(name = "last_name", nullable = false)
     private String lastName;
 

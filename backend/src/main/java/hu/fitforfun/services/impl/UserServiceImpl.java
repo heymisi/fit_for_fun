@@ -6,6 +6,9 @@ import hu.fitforfun.model.User;
 import hu.fitforfun.repositories.UserRepository;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,8 +17,12 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public User getUserById(Long id) throws FitforfunException {
@@ -47,10 +54,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) throws FitforfunException {
-        if (userRepository.findById(user.getId()) != null)
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new FitforfunException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.findById(user.getId()).isPresent()) {
             throw new FitforfunException(ErrorCode.USER_ALREADY_EXISTS);
+        }
 
         // user.setRole(UserRole.USER);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException(email);
+        }
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
     }
 }
