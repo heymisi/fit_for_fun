@@ -12,7 +12,11 @@ public interface UserService extends UserDetailsService {
 
     User deleteUser(Long id) throws FitforfunException;
 
-    List<User> listUsers();
+    List<User> listUsers(int page, int limit);
 
     User createUser(User user) throws FitforfunException;
+
+    User updateUser(Long id, User user) throws FitforfunException;
+
+    boolean verifyEmailToken(String token);
 }

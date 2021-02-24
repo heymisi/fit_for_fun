@@ -1,4 +1,3 @@
-/*
 package hu.fitforfun;
 
 import org.springframework.beans.BeansException;
@@ -16,4 +15,4 @@ public class SpringApplicationContext implements ApplicationContextAware {
     public static Object getBean(String beanName) {
         return CONTEXT.getBean(beanName);
     }
-}*/
+}
