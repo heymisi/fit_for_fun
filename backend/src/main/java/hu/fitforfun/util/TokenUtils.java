@@ -19,7 +19,7 @@ public class TokenUtils {
         return tokenExpirationDate.before(todayDate);
     }
 
-    public static String generateEmailVerificationToken(Long id) {
+    public static String generateToken(Long id, Long expirationTime) {
         String token = Jwts.builder()
                 .setSubject(id.toString())
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
@@ -27,4 +27,5 @@ public class TokenUtils {
                 .compact();
         return token;
     }
+
 }

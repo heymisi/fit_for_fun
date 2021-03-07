@@ -19,4 +19,8 @@ public interface UserService extends UserDetailsService {
     User updateUser(Long id, User user) throws FitforfunException;
 
     boolean verifyEmailToken(String token);
+
+    boolean requestPasswordReset(String email);
+
+    boolean resetPassword(String token, String password);
 }

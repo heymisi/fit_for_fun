@@ -3,9 +3,12 @@ package hu.fitforfun.controller;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.User;
+import hu.fitforfun.model.request.PasswordResetModel;
+import hu.fitforfun.model.request.PasswordResetRequestModel;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -23,8 +26,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Value("${datadir}")
-    private String datadir;
 
     @GetMapping("")
     public List<User> getUsers(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
@@ -57,7 +58,7 @@ public class UserController {
             return Response.createErrorResponse(e.getErrorCode());
         }
     }
-
+    @PreAuthorize("hasAuthority('DELETE_AUTHORITY') or #id == principal.userId")
     @DeleteMapping("/{id}")
     public Response deleteUser(@PathVariable Long id) {
         try {
@@ -76,6 +77,23 @@ public class UserController {
             return Response.createErrorResponse("Error during email verification");
         }
     }
-
+    @PostMapping("/password-reset-request")
+    public Response requestPasswordReset(@RequestBody PasswordResetRequestModel passwordResetRequestModel){
+        boolean operationResult = userService.requestPasswordReset(passwordResetRequestModel.getEmail());
+        if(operationResult){
+            return Response.createOKResponse("Request password reset");
+        }else{
+            return Response.createErrorResponse("Error during request password reset");
+        }
+    }
+    @PostMapping("/password-reset")
+    public Response resetPassword(@RequestBody PasswordResetModel passwordResetModel){
+        boolean operationResult = userService.resetPassword(passwordResetModel.getToken(),passwordResetModel.getPassword());
+        if(operationResult){
+            return Response.createOKResponse("password reset");
+        }else{
+            return Response.createErrorResponse("Error during password reset");
+        }
+    }
 
 }

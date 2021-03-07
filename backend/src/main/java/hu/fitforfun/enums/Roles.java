@@ -1,14 +1,14 @@
 package hu.fitforfun.enums;
 
-public enum UserRole {
+public enum Roles {
     GUEST("Guest"),
-    USER("User"),
+    ROLE_USER("ROLE_USER"),
     INSTRUCTOR("Instructor"),
-    ADMIN("Admin");
+    ROLE_ADMIN("Admin");
 
     private String name;
 
-    UserRole(String name) {
+    Roles(String name) {
         this.name = name;
     }
 

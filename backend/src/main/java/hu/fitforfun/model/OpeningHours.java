@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,5 +25,12 @@ public class OpeningHours extends BaseEntity {
 
     @Column(name = "close_time", nullable = false)
     private double closeTime;
+
+    @Column(name = "is_closed_today")
+    private boolean isClosedToday = false;
+
+    @ManyToMany(mappedBy = "openingHours")
+    @Column(name = "sport_facility")
+    private List<SportFacility> sportFacility;
 
 }

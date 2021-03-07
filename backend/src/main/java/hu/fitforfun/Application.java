@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-@EnableConfigurationProperties
 @ComponentScan(basePackages = {"hu.fitforfun"})
 public class Application {
     public static void main(final String[] args) {
@@ -21,6 +20,12 @@ public class Application {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SpringApplicationContext springApplicationContext()
+    {
+        return new SpringApplicationContext();
     }
 
     @Bean(name="AppProperties")
