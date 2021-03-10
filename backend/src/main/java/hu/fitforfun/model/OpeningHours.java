@@ -1,36 +1,37 @@
 package hu.fitforfun.model;
 
+import hu.fitforfun.enums.WeekDays;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 @Table(name = "opening_hours_table")
 public class OpeningHours extends BaseEntity {
 
     @Column(name = "day", nullable = false)
-    private String day;
+    @Enumerated(value = EnumType.STRING)
+    private WeekDays day;
 
     @Column(name = "open_time", nullable = false)
-    private double openTime;
+    private Double openTime;
 
     @Column(name = "close_time", nullable = false)
-    private double closeTime;
+    private Double closeTime;
 
     @Column(name = "is_closed_today")
-    private boolean isClosedToday = false;
+    private Boolean isClosedToday = false;
 
-    @ManyToMany(mappedBy = "openingHours")
-    @Column(name = "sport_facility")
-    private List<SportFacility> sportFacility;
+    @ManyToOne
+    @JoinColumn(name = "sport_facility_id")
+    private SportFacility sportFacility;
 
 }

@@ -1,9 +1,10 @@
 package hu.fitforfun.model;
 
+import hu.fitforfun.model.rating.FacilityRating;
+import hu.fitforfun.model.rating.Rateable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "facility_table")
-public class SportFacility extends BaseEntity {
+public class SportFacility extends BaseEntity implements Rateable<SportFacility, FacilityRating> {
 
     @Column(name = "name")
     private String name;
@@ -21,23 +22,47 @@ public class SportFacility extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(name = "facility_table_opening_hours",
-            joinColumns = @JoinColumn(name = "sport_facilities_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "opening_hours_id",referencedColumnName = "id"))
-    @Column(name = "opening_hours")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<OpeningHours> openingHours;
 
-   /* @Column(name = "available_sports")
-    private List<SportType> availableSports;
+    @OneToMany(mappedBy = "sportFacility")
+    private List<FacilityRating> ratings;
 
-    @OneToMany(mappedBy = "sportFacility", cascade = CascadeType.ALL)
-    private List<Instructor> instructors;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
+    private List<Comment> comments;
 
-    private List<OpeningHours> openingHours;
+    @Override
+    public List<FacilityRating> getRatings() {
+        return ratings;
+    }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Rating rate;
+    @Override
+    public SportFacility addRating(FacilityRating facilityRating) {
+        facilityRating.setSportFacility(this);
+        this.ratings.add(facilityRating);
+        return this;
+    }
 
-    private List<Comment> comments;*/
+    public SportFacility addComment(Comment comment) {
+        comment.setSportFacility(this);
+        this.comments.add(comment);
+        return this;
+    }
+
+    /*
+
+            @ManyToMany(fetch = FetchType.EAGER)
+        @JoinTable(name = "facility_available_sports",
+                joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "sports_id",referencedColumnName = "id"))
+        private List<SportType> availableSports;
+
+        @ManyToMany()
+        @JoinTable(name = "facility_instructors",
+                joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "instructors_id",referencedColumnName = "id"))
+        private List<Instructor> instructors;
+         */
+
+
 }

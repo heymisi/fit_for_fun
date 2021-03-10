@@ -2,7 +2,7 @@
 
 package hu.fitforfun.controller;
 
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.User;
 import hu.fitforfun.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

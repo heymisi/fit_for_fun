@@ -65,7 +65,7 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/h2/*").permitAll()
                 .anyRequest()
-                .authenticated()
+                .permitAll()
                 .and()
                 .addFilter(getAuthenticationFilter())
                 .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))

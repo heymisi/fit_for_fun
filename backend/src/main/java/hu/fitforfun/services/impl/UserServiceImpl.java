@@ -3,9 +3,8 @@ package hu.fitforfun.services.impl;
 import hu.fitforfun.enums.Roles;
 import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
-import hu.fitforfun.model.PasswordResetTokenEntity;
-import hu.fitforfun.model.User;
-import hu.fitforfun.model.request.PasswordResetRequestModel;
+import hu.fitforfun.model.user.PasswordResetTokenEntity;
+import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.PasswordResetTokenEntityRepository;
 import hu.fitforfun.repositories.RoleRepository;
 import hu.fitforfun.repositories.UserRepository;
@@ -70,19 +69,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) throws FitforfunException {
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+    public User createUser(User user, String role) throws FitforfunException {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new FitforfunException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
-        if (userRepository.findById(user.getId()).isPresent()) {
-            throw new FitforfunException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
         // user.setRole(UserRole.USER);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setEmailVerificationToken(TokenUtils.generateToken(user.getId(),SecurityConstants.EXPIRATION_TIME));
+        user.setEmailVerificationToken(TokenUtils.generateToken(user.getEmail(),SecurityConstants.EXPIRATION_TIME));
         user.setEmailVerificationStatus(false);
-        user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(Roles.ROLE_USER.name()))));
+        user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role))));
         System.err.println(Roles.ROLE_USER.name());
         //new EmailServiceImpl().verifyEmail(user);
         return userRepository.save(user);
@@ -93,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> userToUpdate = userRepository.findById(id);
         if (!userToUpdate.isPresent()) {
-            throw new FitforfunException(ErrorCode.USER_ALREADY_EXISTS);
+            throw new FitforfunException(ErrorCode.USER_NOT_EXISTS);
         }
 
         if (!user.getFirstName().isEmpty())
@@ -123,11 +119,12 @@ public class UserServiceImpl implements UserService {
     public boolean requestPasswordReset(String email) {
         boolean returnValue = false;
 
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
             throw new UsernameNotFoundException(email);
         }
-        String token = TokenUtils.generateToken(user.getId(), SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
+        User user = optionalUser.get();
+        String token = TokenUtils.generateToken(user.getEmail(), SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
         PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
         passwordResetTokenEntity.setToken(token);
         passwordResetTokenEntity.setUserDetails(user);
@@ -162,10 +159,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
             throw new UsernameNotFoundException(email);
         }
+        User user = optionalUser.get();
         return new UserPrincipal(user);
        // return new org.springframework.security.core.userdetails.User(user.getEmail(),
          //       user.getPassword(), user.getEmailVerificationStatus(), true, true, true, user.getRoles());

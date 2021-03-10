@@ -1,11 +1,15 @@
 package hu.fitforfun.configuration;
 
-import hu.fitforfun.model.Authority;
-import hu.fitforfun.model.Role;
-import hu.fitforfun.model.User;
+import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.model.user.Authority;
+import hu.fitforfun.model.Instructor;
+import hu.fitforfun.model.user.Role;
+import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.AuthorityRepository;
+import hu.fitforfun.repositories.InstructorRepository;
 import hu.fitforfun.repositories.RoleRepository;
 import hu.fitforfun.repositories.UserRepository;
+import hu.fitforfun.services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -27,6 +31,10 @@ public class InitialUserSetup {
     UserRepository userRepository;
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    InstructorRepository instructorRepository;
+    @Autowired
+    InstructorService instructorService;
 
     @EventListener
     @Transactional
@@ -38,7 +46,7 @@ public class InitialUserSetup {
         Role roleUser = createRole("ROLE_USER", Arrays.asList(readAuthority, writeAuthority));
         Role roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
 
-        if(roleAdmin == null) return;
+        if (roleAdmin == null) return;
         User adminUser = new User();
         adminUser.setFirstName("admin");
         adminUser.setLastName("admin");
@@ -47,6 +55,10 @@ public class InitialUserSetup {
         adminUser.setPassword(bCryptPasswordEncoder.encode("pass"));
         adminUser.setRoles(Arrays.asList(roleAdmin));
         userRepository.save(adminUser);
+        Instructor instructor = new Instructor();
+        instructor.setUser(adminUser);
+        instructorRepository.save(instructor);
+        createInstructor();
 
     }
 
@@ -69,5 +81,21 @@ public class InitialUserSetup {
             roleRepository.save(role);
         }
         return role;
+    }
+
+    @Transactional
+    private Instructor createInstructor() {
+        User user = new User();
+        user.setEmail("misi@gmail.com");
+        user.setFirstName("instructor");
+        user.setLastName("instructor");
+        user.setPassword("pass");
+        Instructor instructor = null;
+        try {
+            instructor = instructorService.createInstructor(user);
+        } catch (FitforfunException e) {
+            System.err.println(e.getErrorCode());
+        }
+        return instructor;
     }
 }

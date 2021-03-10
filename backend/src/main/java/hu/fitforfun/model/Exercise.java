@@ -17,7 +17,7 @@ public class Exercise extends BaseEntity {
 
     @Column(name = "name")
     private String name;
-
+/*
     @Column(name = "sports")
     @OneToMany( mappedBy = "exercise")
     private List<SportType> sports;
@@ -28,4 +28,6 @@ public class Exercise extends BaseEntity {
     @Column(name = "comments")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "exercise")
     private List<Comment> comments;
+    */
+
 }

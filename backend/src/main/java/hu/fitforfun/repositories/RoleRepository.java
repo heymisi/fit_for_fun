@@ -1,6 +1,6 @@
 package hu.fitforfun.repositories;
 
-import hu.fitforfun.model.Role;
+import hu.fitforfun.model.user.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

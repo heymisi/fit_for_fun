@@ -3,7 +3,7 @@ package hu.fitforfun.enums;
 public enum Roles {
     GUEST("Guest"),
     ROLE_USER("ROLE_USER"),
-    INSTRUCTOR("Instructor"),
+    ROLE_INSTRUCTOR("ROLE_INSTRUCTOR"),
     ROLE_ADMIN("Admin");
 
     private String name;

@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sport_table")
+@Table(name = "sports_table")
 public class SportType extends BaseEntity {
 
     @Column(name = "name", nullable = false)
@@ -19,4 +20,8 @@ public class SportType extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
+    /*
+    @ManyToMany(mappedBy = "availableSports")
+    private List<SportFacility> sportFacilities;
+    */
 }

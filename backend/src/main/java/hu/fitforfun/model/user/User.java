@@ -1,14 +1,14 @@
-package hu.fitforfun.model;
+package hu.fitforfun.model.user;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hu.fitforfun.model.BaseEntity;
+import hu.fitforfun.model.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -41,6 +41,7 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id",referencedColumnName = "id"))
     private Collection<Role> roles;
+
 
  /*
 

@@ -1,4 +1,4 @@
-insert into rating_table(rating_value, rated_by) VALUES (5.5, 5);
+--insert into rating_table(rating_value, rated_by) VALUES (5.5, 5);
 
 insert into user_table (first_name,last_name,email_address,password,email_verification_status) VALUES ('Krisz','Smith','email','123','true');
 

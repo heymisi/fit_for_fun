@@ -1,6 +1,6 @@
 package hu.fitforfun.services;
 
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.User;
 
 public interface EmailService {
     void verifyEmail(User user);

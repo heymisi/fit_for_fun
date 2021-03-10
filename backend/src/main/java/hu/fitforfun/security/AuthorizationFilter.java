@@ -1,6 +1,6 @@
 package hu.fitforfun.security;
 
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Optional;
 
 public class AuthorizationFilter extends BasicAuthenticationFilter {
     private final UserRepository userRepository;
@@ -54,9 +54,9 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
             if (user != null) {
-                User userEntity = userRepository.findByEmail(user);
-                if(userEntity == null) return null;
-                UserPrincipal userPrincipal = new UserPrincipal(userEntity);
+                Optional<User> userEntity = userRepository.findByEmail(user);
+                if(!userEntity.isPresent()) return null;
+                UserPrincipal userPrincipal = new UserPrincipal(userEntity.get());
                 return new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
             }
             return null;

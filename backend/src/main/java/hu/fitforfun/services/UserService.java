@@ -1,7 +1,7 @@
 package hu.fitforfun.services;
 
 import hu.fitforfun.exception.FitforfunException;
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public interface UserService extends UserDetailsService {
 
     List<User> listUsers(int page, int limit);
 
-    User createUser(User user) throws FitforfunException;
+    User createUser(User user, String role) throws FitforfunException;
 
     User updateUser(Long id, User user) throws FitforfunException;
 

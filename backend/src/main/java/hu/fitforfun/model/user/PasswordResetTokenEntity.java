@@ -1,12 +1,11 @@
-package hu.fitforfun.model;
+package hu.fitforfun.model.user;
 
+import hu.fitforfun.model.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
-import java.util.List;
 
 @Data
 @Entity(name = "password_reset_token")

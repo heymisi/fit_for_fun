@@ -1,13 +1,16 @@
 package hu.fitforfun.controller;
 
-import hu.fitforfun.model.Instructor;
+import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.SportFacility;
-import hu.fitforfun.repositories.SportFacilityRepository;
+import hu.fitforfun.model.user.User;
+import hu.fitforfun.services.SportFacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -15,63 +18,59 @@ import java.util.Optional;
 public class SportFacilityController {
 
     @Autowired
-    private SportFacilityRepository sportFacilityRepository;
+    private SportFacilityService sportFacilityService;
 
 
     @GetMapping("")
-    public ResponseEntity<Iterable<SportFacility>> getFacilities() {
-        return ResponseEntity.ok(sportFacilityRepository.findAll());
+    public List<SportFacility> getSportFacilities(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        return sportFacilityService.listSportFacilities(page, limit);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SportFacility> get(@PathVariable Long id) {
-        Optional<SportFacility> facility = sportFacilityRepository.findById(id);
-        if (facility.isPresent()) {
-            return ResponseEntity.ok(facility.get());
-        } else {
-            return ResponseEntity.notFound().build();
+    public Response getSportFacilityById(@PathVariable Long id) {
+        try {
+            return Response.createOKResponse(sportFacilityService.getSportFacilityById(id));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
         }
     }
 
-    @PostMapping("/post")
-    public ResponseEntity<SportFacility> post(@RequestBody SportFacility facility) {
-        SportFacility savedEntity = sportFacilityRepository.save(facility);
-        return ResponseEntity.ok(savedEntity);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        Optional<SportFacility> facility = sportFacilityRepository.findById(id);
-        if (!facility.isPresent()) {
-            ResponseEntity.notFound();
+    @PostMapping({"", "/"})
+    public Response saveSportFacility(@RequestBody SportFacility sportFacility) {
+        try {
+            return Response.createOKResponse(sportFacilityService.createSportFacility(sportFacility));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
         }
-        sportFacilityRepository.delete(facility.get());
-
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SportFacility> put(@PathVariable Long id, @RequestBody SportFacility facility) {
-        Optional<SportFacility> found = sportFacilityRepository.findById(id);
-        if (!found.isPresent()) {
-            ResponseEntity.notFound();
+    public Response updateSportFacility(@PathVariable Long id, @RequestBody SportFacility sportFacility) {
+        try {
+            return Response.createOKResponse(sportFacilityService.updateSportFacility(id, sportFacility));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
         }
-        SportFacility instToUpdate = found.get();
-        if (facility.getName() != null) {
-            instToUpdate.setName(facility.getName());
-        }
-        return ResponseEntity.ok(sportFacilityRepository.save(instToUpdate));
     }
-
-    /*@GetMapping("/{id}/instructors")
-    public ResponseEntity<Iterable<Instructor>> getInstructors(@PathVariable Long id) {
-        Optional<SportFacility> facility = sportFacilityRepository.findById(id);
-        if (facility.isPresent()) {
-            return ResponseEntity.ok(facility.get().getInstructors());
-        } else {
-            return ResponseEntity.notFound().build();
+    //@PreAuthorize("hasAuthority('DELETE_AUTHORITY') or #id == principal.userId")
+    @DeleteMapping("/{id}")
+    public Response deleteSportFacility(@PathVariable Long id) {
+        try {
+            sportFacilityService.deleteSportFacility(id);
+            return Response.createOKResponse("Successful delete");
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
         }
-    }*/
+    }
+    @PostMapping("/{id}/rate")
+    public Response rateSportFacility(@PathVariable Long id, @RequestParam(value = "value") Double value) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            return Response.createOKResponse(sportFacilityService.rateSportFacility((User)auth.getDetails(),id, value));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
+        }
+    }
 }
 
 

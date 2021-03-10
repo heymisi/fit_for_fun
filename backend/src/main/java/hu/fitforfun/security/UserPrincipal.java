@@ -1,16 +1,14 @@
 package hu.fitforfun.security;
 
-import hu.fitforfun.model.Authority;
-import hu.fitforfun.model.Role;
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.Authority;
+import hu.fitforfun.model.user.Role;
+import hu.fitforfun.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public class UserPrincipal implements UserDetails {
 

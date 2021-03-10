@@ -1,7 +1,8 @@
-package hu.fitforfun.model;
+package hu.fitforfun.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hu.fitforfun.model.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Role extends BaseEntity{
+public class Role extends BaseEntity {
 
     @Column(nullable = false)
     private String name;

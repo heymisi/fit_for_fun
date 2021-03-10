@@ -1,22 +1,16 @@
 package hu.fitforfun.controller;
 
+import hu.fitforfun.enums.Roles;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
-import hu.fitforfun.model.User;
+import hu.fitforfun.model.user.User;
 import hu.fitforfun.model.request.PasswordResetModel;
 import hu.fitforfun.model.request.PasswordResetRequestModel;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.net.URLConnection;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -44,7 +38,7 @@ public class UserController {
     @PostMapping({"", "/"})
     public Response saveUser(@RequestBody User user) {
         try {
-            return Response.createOKResponse(userService.createUser(user));
+            return Response.createOKResponse(userService.createUser(user, Roles.ROLE_USER.name()));
         } catch (FitforfunException e) {
             return Response.createErrorResponse(e.getErrorCode());
         }

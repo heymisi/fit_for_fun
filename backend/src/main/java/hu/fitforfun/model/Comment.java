@@ -26,6 +26,10 @@ public class Comment extends BaseEntity {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
+    @JoinColumn(name = "sport_facility_id")
+    private SportFacility sportFacility;
+
+    @ManyToOne
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
 }

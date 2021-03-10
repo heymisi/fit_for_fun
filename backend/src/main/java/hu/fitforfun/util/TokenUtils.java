@@ -19,9 +19,9 @@ public class TokenUtils {
         return tokenExpirationDate.before(todayDate);
     }
 
-    public static String generateToken(Long id, Long expirationTime) {
+    public static String generateToken(String email, Long expirationTime) {
         String token = Jwts.builder()
-                .setSubject(id.toString())
+                .setSubject(email)
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
                 .compact();
