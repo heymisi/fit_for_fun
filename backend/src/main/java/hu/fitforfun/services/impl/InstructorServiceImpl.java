@@ -5,11 +5,13 @@ import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.Instructor;
+import hu.fitforfun.model.TrainingSession;
 import hu.fitforfun.model.rating.InstructorRating;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.InstructorService;
 import hu.fitforfun.services.RatingService;
+import hu.fitforfun.services.TrainingSessionService;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,11 +45,17 @@ public class InstructorServiceImpl implements InstructorService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    TrainingSessionRepository trainingSessionRepository;
+
+    @Autowired
+    TrainingSessionService trainingSessionService;
+
     @Override
     public Instructor getInstructorById(Long id) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(id);
         if (!optionalInstructor.isPresent()) {
-            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXIST);
+            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
         }
         return optionalInstructor.get();
     }
@@ -71,6 +79,7 @@ public class InstructorServiceImpl implements InstructorService {
         Instructor instructor = new Instructor();
         instructor.setRatings(new ArrayList<>());
         instructor.setComments(new ArrayList<>());
+        instructor.setTrainingSessions(new ArrayList<>());
         instructor.setUser(savedUser);
         return  instructorRepository.save(instructor);
     }
@@ -79,21 +88,27 @@ public class InstructorServiceImpl implements InstructorService {
     public void deleteInstructor(Long id) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(id);
         if (!optionalInstructor.isPresent()) {
-            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXIST);
+            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
         }
         instructorRepository.delete(optionalInstructor.get());
     }
 
     @Override
-    public Instructor updateInstructor(Long id, Instructor instructor) throws FitforfunException {
-        return null;
+    public Instructor updateInstructor(Long id, User user) throws FitforfunException {
+        Optional<Instructor> optionalInstructor = instructorRepository.findById(id);
+        if (!optionalInstructor.isPresent()) {
+            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
+        }
+        Instructor instructor = optionalInstructor.get();
+        userService.updateUser(instructor.getUser().getId(), user);
+        return instructor;
     }
 
     @Override
     public InstructorRating rateInstructor(User user, Long instructorId, Double value) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(instructorId);
         if (!optionalInstructor.isPresent()) {
-            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXIST);
+            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
         }
         Instructor instructor = optionalInstructor.get();
         if(isInstructorAlreadyRatedByUser(instructor,user)){
@@ -112,7 +127,7 @@ public class InstructorServiceImpl implements InstructorService {
     public Instructor commentInstructor(User user, Long instructorId, Comment comment) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(instructorId);
         if (!optionalInstructor.isPresent()) {
-            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXIST);
+            throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
         }
         Instructor instructor = optionalInstructor.get();
         comment.setCreated(java.sql.Date.valueOf(LocalDate.now()));
@@ -122,6 +137,9 @@ public class InstructorServiceImpl implements InstructorService {
         commentRepository.save(comment);
         return instructor;
     }
+
+
+
 
     public boolean isInstructorAlreadyRatedByUser(Instructor instructor, User user) {
         Optional<InstructorRating> rating = instructorRatingRepository.findByInstructorAndUser(instructor, user);

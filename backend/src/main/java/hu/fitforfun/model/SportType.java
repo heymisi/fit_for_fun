@@ -17,11 +17,18 @@ public class SportType extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
-    /*
+    @OneToMany(mappedBy = "sportType")
+    private List<Exercise> exercises;
+
     @ManyToMany(mappedBy = "availableSports")
     private List<SportFacility> sportFacilities;
-    */
+
+    @ManyToMany(mappedBy = "knownSports")
+    private List<Instructor> instructors;
+
+    public SportType addExercises(Exercise exercise) {
+        exercise.setSportType(this);
+        this.exercises.add(exercise);
+        return this;
+    }
 }

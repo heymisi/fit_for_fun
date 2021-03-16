@@ -17,17 +17,25 @@ public class Exercise extends BaseEntity {
 
     @Column(name = "name")
     private String name;
-/*
-    @Column(name = "sports")
-    @OneToMany( mappedBy = "exercise")
-    private List<SportType> sports;
 
-    @Enumerated
+    @Lob
+    @Column(name = "description")
+    private String description;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
+    private List<Comment> comments;
+
+    @ManyToOne
+    @JoinColumn(name = "sport_id")
+    private SportType sportType;
+
+    @Enumerated(value = EnumType.STRING)
     private Difficulty difficulty;
 
-    @Column(name = "comments")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "exercise")
-    private List<Comment> comments;
-    */
+    public Exercise addComment(Comment comment) {
+        comment.setExercise(this);
+        this.comments.add(comment);
+        return this;
+    }
 
 }

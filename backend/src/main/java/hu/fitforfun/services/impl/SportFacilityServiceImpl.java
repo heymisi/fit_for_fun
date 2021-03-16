@@ -74,7 +74,7 @@ public class SportFacilityServiceImpl implements SportFacilityService {
     @Override
     public SportFacility updateSportFacility(Long id, SportFacility sportFacility) throws FitforfunException {
         Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(id);
-        if (sportFacilityRepository.findByName(sportFacility.getName()).isPresent()) {
+        if (!optionalSportFacility.isPresent()) {
             throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
         }
         SportFacility updatedSportFacility = optionalSportFacility.get();

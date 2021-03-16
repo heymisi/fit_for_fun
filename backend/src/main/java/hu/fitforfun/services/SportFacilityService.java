@@ -22,4 +22,5 @@ public interface SportFacilityService {
     FacilityRating rateSportFacility(User user,Long facilityId, Double value) throws FitforfunException;
 
     SportFacility commentSportFacility(User user,Long facilityId, Comment comment) throws FitforfunException;
+
 }

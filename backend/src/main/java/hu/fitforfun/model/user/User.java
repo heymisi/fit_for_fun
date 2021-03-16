@@ -2,6 +2,9 @@ package hu.fitforfun.model.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hu.fitforfun.model.BaseEntity;
+import hu.fitforfun.model.Instructor;
+import hu.fitforfun.model.TrainingSession;
+import hu.fitforfun.model.shop.Transaction;
 import hu.fitforfun.model.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,6 +46,11 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "roles_id",referencedColumnName = "id"))
     private Collection<Role> roles;
 
+    @OneToMany(mappedBy = "client")
+    private List<TrainingSession> trainingSessions;
+
+    @OneToMany(mappedBy = "purchaser")
+    private List<Transaction> transactions;
 
  /*
 
@@ -59,5 +68,11 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;*/
+
+    public User addTrainingSession(TrainingSession session){
+        session.setClient(this);
+        this.trainingSessions.add(session);
+        return this;
+    }
 
 }

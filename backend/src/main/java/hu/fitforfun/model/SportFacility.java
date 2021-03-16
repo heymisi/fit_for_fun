@@ -1,5 +1,6 @@
 package hu.fitforfun.model;
 
+import hu.fitforfun.enums.SportFacilityType;
 import hu.fitforfun.model.rating.FacilityRating;
 import hu.fitforfun.model.rating.Rateable;
 import lombok.AllArgsConstructor;
@@ -22,8 +23,17 @@ public class SportFacility extends BaseEntity implements Rateable<SportFacility,
     @Column(name = "address")
     private String address;
 
+    @Enumerated(EnumType.STRING)
+    private SportFacilityType sportFacilityType;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<OpeningHours> openingHours;
+
+    @ManyToMany()
+    @JoinTable(name = "facility_available_sports",
+            joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "sports_id", referencedColumnName = "id"))
+    private List<SportType> availableSports;
 
     @OneToMany(mappedBy = "sportFacility")
     private List<FacilityRating> ratings;
@@ -31,10 +41,6 @@ public class SportFacility extends BaseEntity implements Rateable<SportFacility,
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<Comment> comments;
 
-    @Override
-    public List<FacilityRating> getRatings() {
-        return ratings;
-    }
 
     @Override
     public SportFacility addRating(FacilityRating facilityRating) {
@@ -49,13 +55,17 @@ public class SportFacility extends BaseEntity implements Rateable<SportFacility,
         return this;
     }
 
-    /*
+    public SportFacility addSport(SportType sportType) {
+        sportType.getSportFacilities().add(this);
+        this.availableSports.add(sportType);
+        return this;
+    }
 
-            @ManyToMany(fetch = FetchType.EAGER)
-        @JoinTable(name = "facility_available_sports",
-                joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
-                inverseJoinColumns = @JoinColumn(name = "sports_id",referencedColumnName = "id"))
-        private List<SportType> availableSports;
+    @Override
+    public List<FacilityRating> getRatings() {
+        return ratings;
+    }
+    /*
 
         @ManyToMany()
         @JoinTable(name = "facility_instructors",

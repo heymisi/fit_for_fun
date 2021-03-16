@@ -1,6 +1,8 @@
 package hu.fitforfun.configuration;
 
+import hu.fitforfun.enums.WeekDays;
 import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.model.TrainingSession;
 import hu.fitforfun.model.user.Authority;
 import hu.fitforfun.model.Instructor;
 import hu.fitforfun.model.user.Role;
@@ -10,6 +12,7 @@ import hu.fitforfun.repositories.InstructorRepository;
 import hu.fitforfun.repositories.RoleRepository;
 import hu.fitforfun.repositories.UserRepository;
 import hu.fitforfun.services.InstructorService;
+import hu.fitforfun.services.TrainingSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -35,6 +38,8 @@ public class InitialUserSetup {
     InstructorRepository instructorRepository;
     @Autowired
     InstructorService instructorService;
+    @Autowired
+    TrainingSessionService trainingSessionService;
 
     @EventListener
     @Transactional
@@ -55,10 +60,8 @@ public class InitialUserSetup {
         adminUser.setPassword(bCryptPasswordEncoder.encode("pass"));
         adminUser.setRoles(Arrays.asList(roleAdmin));
         userRepository.save(adminUser);
-        Instructor instructor = new Instructor();
-        instructor.setUser(adminUser);
-        instructorRepository.save(instructor);
-        createInstructor();
+
+        Instructor instructor1 = createInstructor(adminUser);
 
     }
 
@@ -84,7 +87,27 @@ public class InitialUserSetup {
     }
 
     @Transactional
-    private Instructor createInstructor() {
+    private Instructor createInstructor(User client) {
+
+        TrainingSession session = new TrainingSession();
+        session.setClient(client);
+        session.setDay(WeekDays.FRIDAY);
+        session.setSessionStart(15d);
+        session.setSessionEnd(16d);
+        TrainingSession session2 = new TrainingSession();
+        session2.setClient(client);
+        session2.setDay(WeekDays.FRIDAY);
+        session2.setSessionStart(16d);
+        session2.setSessionEnd(17d);
+        TrainingSession session3 = new TrainingSession();
+        session3.setClient(client);
+        session3.setDay(WeekDays.FRIDAY);
+        session3.setSessionStart(16d);
+        session3.setSessionEnd(17d);
+
+
+
+
         User user = new User();
         user.setEmail("misi@gmail.com");
         user.setFirstName("instructor");
@@ -93,6 +116,16 @@ public class InitialUserSetup {
         Instructor instructor = null;
         try {
             instructor = instructorService.createInstructor(user);
+          //  instructorService.addTrainingSession(instructor.getId(),session3);
+            session.setInstructor(instructor);
+            session2.setInstructor(instructor);
+            session3.setInstructor(instructor);
+            trainingSessionService.addTrainingSessionToClient(client.getId(),session);
+            trainingSessionService.deleteTrainingSession(session.getId());
+            trainingSessionService.addTrainingSessionToClient(client.getId(),session2);
+            trainingSessionService.addTrainingSessionToClient(client.getId(),session3);
+
+
         } catch (FitforfunException e) {
             System.err.println(e.getErrorCode());
         }

@@ -29,6 +29,15 @@ public class Instructor extends BaseEntity implements Rateable<Instructor, Instr
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<Comment> comments;
 
+    @ManyToMany()
+    @JoinTable(name = "instructors_known_sports",
+            joinColumns = @JoinColumn(name = "instructors_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "sports_id", referencedColumnName = "id"))
+    private List<SportType> knownSports;
+
+    @OneToMany(mappedBy = "instructor")
+    private List<TrainingSession> trainingSessions;
+
     @Override
     public List<InstructorRating> getRatings() {
         return ratings;
@@ -46,17 +55,15 @@ public class Instructor extends BaseEntity implements Rateable<Instructor, Instr
         this.comments.add(comment);
         return this;
     }
-/*
-
-    @ManyToMany(mappedBy = "instructors")
-    private List<SportFacility> sportFacility;
-    /*
-    @Column(name = "sports")
-    private List<SportType> sports;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private Rating rate;
-
-    private List<Comment> comments;*/
+    public Instructor addSport(SportType sportType){
+        sportType.getInstructors().add(this);
+        this.knownSports.add(sportType);
+        return this;
+    }
+    public Instructor addTrainingSession(TrainingSession session){
+        session.setInstructor(this);
+        this.trainingSessions.add(session);
+        return this;
+    }
 
 }

@@ -14,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class Application {
     public static void main(final String[] args) {
         ApplicationContext context = SpringApplication.run(Application.class, args);
-        System.out.println(context.getBean("emailServiceImpl"));
     }
 
     @Bean
