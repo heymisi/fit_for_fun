@@ -1,13 +1,47 @@
-<!-- Navigation -->
-<app-menu-bar></app-menu-bar>
+<div class="page-wrapper">
 
-<router-outlet></router-outlet>
+  <!-- MENU SIDEBAR-->
+  <aside class="menu-sidebar d-none d-lg-block">
+    <div class="logo">
+      <a href="#">
+        <img src="assets/images/logo.PNG" alt="FitForFun" class="img-responsive">
+      </a>
+      <h5><em>FitForFun</em></h5>
+    </div>
+    <app-product-category-menu></app-product-category-menu>
+    
+  </aside>
+  <!-- END MENU SIDEBAR-->
 
-
-<!-- Footer -->
-<footer class="py-5 bg-dark">
-  <div class="container">
-    <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+  <div class="page-container">
+    <!-- HEADER DESKTOP-->
+    <header class="header-desktop">
+      <div class="section-content section-content-p30">
+        <div class="container-fluid">
+          <div class="header-wrap">
+            <form class="form-header" onsubmit="return false;" method="GET">
+              <input class="au-input au-input-xl" type="text" name="search" placeholder="Search for data ..." />
+              <button class="au-btn-submit" type="submit">
+                Search
+              </button>
+            </form>
+            <div class="cart-area d-n">
+              <a href="shopping-detail.html">
+                <div class="total">19.22 <span> 2</span> </div> <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+          <div class="account-wrap"></div>
+        </div>
+      </div>
+    </header>
+    <!-- END HEADER DESKTOP-->
+    <router-outlet></router-outlet>
   </div>
-  <!-- /.container -->
-</footer>
+</div>
+
+<!-- ENDS PAGE CONTAINER -->
+
+<app-footer></app-footer>
+
+

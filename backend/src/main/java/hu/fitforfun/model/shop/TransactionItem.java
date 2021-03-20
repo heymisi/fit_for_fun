@@ -12,11 +12,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity(name = "transaction_item")
 public class TransactionItem extends BaseEntity {
-
+/*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_item_id")
     private ShopItem shopItem;
-
+*/
     private Integer quantity;
 
     private Double price;
