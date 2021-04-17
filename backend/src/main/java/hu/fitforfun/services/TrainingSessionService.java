@@ -2,8 +2,8 @@ package hu.fitforfun.services;
 
 import hu.fitforfun.enums.WeekDays;
 import hu.fitforfun.exception.FitforfunException;
-import hu.fitforfun.model.Instructor;
-import hu.fitforfun.model.TrainingSession;
+import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.instructor.TrainingSession;
 import hu.fitforfun.model.user.User;
 
 import java.util.List;

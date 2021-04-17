@@ -1,13 +1,15 @@
+/*
 package hu.fitforfun.services.impl;
 
-import hu.fitforfun.model.Instructor;
-import hu.fitforfun.model.SportFacility;
+import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.rating.FacilityRating;
 import hu.fitforfun.model.rating.InstructorRating;
 import hu.fitforfun.model.request.RatingRequestModel;
 import hu.fitforfun.repositories.FacilityRatingRepository;
 import hu.fitforfun.services.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 public class RatingInstructorServiceImpl implements RatingService<Instructor> {
 
@@ -26,3 +28,4 @@ public class RatingInstructorServiceImpl implements RatingService<Instructor> {
         return returnRating;
     }
 }
+*/

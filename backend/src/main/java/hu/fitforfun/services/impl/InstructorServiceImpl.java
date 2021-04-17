@@ -4,13 +4,10 @@ import hu.fitforfun.enums.Roles;
 import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
-import hu.fitforfun.model.Instructor;
-import hu.fitforfun.model.TrainingSession;
-import hu.fitforfun.model.rating.InstructorRating;
+import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.InstructorService;
-import hu.fitforfun.services.RatingService;
 import hu.fitforfun.services.TrainingSessionService;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,11 +29,7 @@ public class InstructorServiceImpl implements InstructorService {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    InstructorRatingRepository instructorRatingRepository;
 
-    @Autowired
-    RatingService ratingService;
 
     @Autowired
     CommentRepository commentRepository;
@@ -61,26 +53,23 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public List<Instructor> listInstructors(int page, int limit) {
+    public Page<Instructor> listInstructors(int page, int limit) {
         if (page > 0) page--;
 
         Pageable pageableRequest = PageRequest.of(page, limit);
         Page<Instructor> instructors = instructorRepository.findAll(pageableRequest);
-        List<Instructor> returnValue = instructors.getContent();
-        return returnValue;
+        return instructors;
     }
 
     @Override
-    public Instructor createInstructor(User user) throws FitforfunException {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    public Instructor createInstructor(Instructor instructor) throws Exception {
+        if (userRepository.findByEmail(instructor.getUser().getEmail()).isPresent()) {
             throw new FitforfunException(ErrorCode.SPORT_FACILITY_ALREADY_EXISTS);
         }
-        User savedUser = userService.createUser(user, Roles.ROLE_INSTRUCTOR.name());
-        Instructor instructor = new Instructor();
-        instructor.setRatings(new ArrayList<>());
+        User savedUser = userService.createUser(instructor.getUser(), Roles.ROLE_INSTRUCTOR.name());
+       //  instructor.setRatings(new ArrayList<>());
         instructor.setComments(new ArrayList<>());
         instructor.setTrainingSessions(new ArrayList<>());
-        instructor.setUser(savedUser);
         return  instructorRepository.save(instructor);
     }
 
@@ -103,7 +92,7 @@ public class InstructorServiceImpl implements InstructorService {
         userService.updateUser(instructor.getUser().getId(), user);
         return instructor;
     }
-
+/*
     @Override
     public InstructorRating rateInstructor(User user, Long instructorId, Double value) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(instructorId);
@@ -111,7 +100,7 @@ public class InstructorServiceImpl implements InstructorService {
             throw new FitforfunException(ErrorCode.INSTRUCTOR_NOT_EXISTS);
         }
         Instructor instructor = optionalInstructor.get();
-        if(isInstructorAlreadyRatedByUser(instructor,user)){
+       if(isInstructorAlreadyRatedByUser(instructor,user)){
             throw new FitforfunException(ErrorCode.INSTRUCTOR_ALREADY_RATED);
         }
 
@@ -122,7 +111,7 @@ public class InstructorServiceImpl implements InstructorService {
 
         return instructorRatingRepository.save(rating);
     }
-
+*/
     @Override
     public Instructor commentInstructor(User user, Long instructorId, Comment comment) throws FitforfunException {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(instructorId);
@@ -141,9 +130,9 @@ public class InstructorServiceImpl implements InstructorService {
 
 
 
-    public boolean isInstructorAlreadyRatedByUser(Instructor instructor, User user) {
+/*    public boolean isInstructorAlreadyRatedByUser(Instructor instructor, User user) {
         Optional<InstructorRating> rating = instructorRatingRepository.findByInstructorAndUser(instructor, user);
         if (rating.isPresent()) return true;
         return false;
-    }
+    }*/
 }

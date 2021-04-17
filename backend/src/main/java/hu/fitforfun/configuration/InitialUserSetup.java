@@ -2,15 +2,15 @@ package hu.fitforfun.configuration;
 
 import hu.fitforfun.enums.WeekDays;
 import hu.fitforfun.exception.FitforfunException;
-import hu.fitforfun.model.TrainingSession;
+import hu.fitforfun.model.ContactData;
+import hu.fitforfun.model.instructor.TrainingSession;
+import hu.fitforfun.model.address.Address;
+import hu.fitforfun.model.instructor.TrainingSessionDetails;
 import hu.fitforfun.model.user.Authority;
-import hu.fitforfun.model.Instructor;
+import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.user.Role;
 import hu.fitforfun.model.user.User;
-import hu.fitforfun.repositories.AuthorityRepository;
-import hu.fitforfun.repositories.InstructorRepository;
-import hu.fitforfun.repositories.RoleRepository;
-import hu.fitforfun.repositories.UserRepository;
+import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.InstructorService;
 import hu.fitforfun.services.TrainingSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,13 @@ public class InitialUserSetup {
     InstructorService instructorService;
     @Autowired
     TrainingSessionService trainingSessionService;
+    @Autowired
+    AddressRepository addressRepository;
+    @Autowired
+    CityRepository cityRepository;
+
+    @Autowired
+    TrainingSessionDetailsRepository trainingSessionDetailsRepository;
 
     @EventListener
     @Transactional
@@ -55,13 +62,14 @@ public class InitialUserSetup {
         User adminUser = new User();
         adminUser.setFirstName("admin");
         adminUser.setLastName("admin");
-        adminUser.setEmail("heymisi99@gmail.com");
+        adminUser.setEmail("asd@asd.com");
         adminUser.setEmailVerificationStatus(true);
         adminUser.setPassword(bCryptPasswordEncoder.encode("pass"));
         adminUser.setRoles(Arrays.asList(roleAdmin));
         userRepository.save(adminUser);
 
         Instructor instructor1 = createInstructor(adminUser);
+
 
     }
 
@@ -91,31 +99,57 @@ public class InitialUserSetup {
 
         TrainingSession session = new TrainingSession();
         session.setClient(client);
-        session.setDay(WeekDays.FRIDAY);
+        session.setDay(WeekDays.PÉNTEK);
         session.setSessionStart(15d);
         session.setSessionEnd(16d);
         TrainingSession session2 = new TrainingSession();
         session2.setClient(client);
-        session2.setDay(WeekDays.FRIDAY);
+        session2.setDay(WeekDays.PÉNTEK);
         session2.setSessionStart(16d);
         session2.setSessionEnd(17d);
         TrainingSession session3 = new TrainingSession();
         session3.setClient(client);
-        session3.setDay(WeekDays.FRIDAY);
+        session3.setDay(WeekDays.PÉNTEK);
         session3.setSessionStart(16d);
         session3.setSessionEnd(17d);
 
+        ContactData contactData = new ContactData();
+        contactData.setTelNumber("702175709");
+        contactData.setEmail("heymisi99@gmail.com");
 
+        Address address = new Address();
+        address.setCountry("Hungary");
+        address.setStreet("Pesti út 32");
+        address.setZipCode(2730);
+        address.setCounty("Pest");
+        address.setCity(cityRepository.findByCityNameIgnoreCase("Albertirsa"));
+        addressRepository.save(address);
 
+        TrainingSessionDetails trainingSessionDetails = new TrainingSessionDetails();
+        trainingSessionDetails.setName("Csoportos kragmaga edzés");
+        trainingSessionDetails.setDurationMinutes(90);
+        trainingSessionDetails.setMonthlyPrice(10000);
+        trainingSessionDetails.setOccasionPrice(1500);
+        TrainingSessionDetails trainingSessionDetails2 = new TrainingSessionDetails();
+        trainingSessionDetails2.setName("Személyes kragmaga edzés");
+        trainingSessionDetails2.setDurationMinutes(60);
+        trainingSessionDetails2.setMonthlyPrice(10000);
+        trainingSessionDetails2.setOccasionPrice(3000);
 
         User user = new User();
         user.setEmail("misi@gmail.com");
         user.setFirstName("instructor");
         user.setLastName("instructor");
         user.setPassword("pass");
-        Instructor instructor = null;
+        user.setContactData(contactData);
+        user.setShippingAddress(address);
+        Instructor instructor = new Instructor();
+        instructor.setTitle("Személyi edző");
+        instructor.setBio("Segítek célod elérésében bármi áron, nincs lehetetlen csak tehetetlen");
+        instructor.setUser(user);
+        instructor.setTrainingSessionDetails(Arrays.asList(trainingSessionDetails,trainingSessionDetails2));
         try {
-            instructor = instructorService.createInstructor(user);
+            instructor = instructorService.createInstructor(instructor);
           //  instructorService.addTrainingSession(instructor.getId(),session3);
             session.setInstructor(instructor);
             session2.setInstructor(instructor);
@@ -124,10 +158,10 @@ public class InitialUserSetup {
             trainingSessionService.deleteTrainingSession(session.getId());
             trainingSessionService.addTrainingSessionToClient(client.getId(),session2);
             trainingSessionService.addTrainingSessionToClient(client.getId(),session3);
-
-
         } catch (FitforfunException e) {
             System.err.println(e.getErrorCode());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return instructor;
     }

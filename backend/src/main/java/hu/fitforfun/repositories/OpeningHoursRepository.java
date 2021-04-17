@@ -1,7 +1,7 @@
 package hu.fitforfun.repositories;
 
 import hu.fitforfun.enums.WeekDays;
-import hu.fitforfun.model.OpeningHours;
+import hu.fitforfun.model.facility.OpeningHours;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

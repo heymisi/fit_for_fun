@@ -1,9 +1,12 @@
-package hu.fitforfun.model;
+package hu.fitforfun.model.instructor;
 
 
-import hu.fitforfun.model.rating.FacilityRating;
-import hu.fitforfun.model.rating.InstructorRating;
-import hu.fitforfun.model.rating.Rateable;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import hu.fitforfun.model.BaseEntity;
+import hu.fitforfun.model.Comment;
+import hu.fitforfun.model.SportType;
+import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,14 +20,21 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "instructor_table")
-public class Instructor extends BaseEntity implements Rateable<Instructor, InstructorRating> {
+@JsonIdentityInfo(scope = Instructor.class,generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+public class Instructor extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
+  /*  @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<InstructorRating> ratings;
+*/
+
+    private String title;
+
+    private String bio;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<Comment> comments;
@@ -38,7 +48,16 @@ public class Instructor extends BaseEntity implements Rateable<Instructor, Instr
     @OneToMany(mappedBy = "instructor")
     private List<TrainingSession> trainingSessions;
 
-    @Override
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<TrainingSessionDetails> trainingSessionDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "sport_facility_id")
+    private SportFacility sportFacility;
+
+
+
+  /*  @Override
     public List<InstructorRating> getRatings() {
         return ratings;
     }
@@ -48,13 +67,14 @@ public class Instructor extends BaseEntity implements Rateable<Instructor, Instr
         instructorRating.setInstructor(this);
         this.ratings.add(instructorRating);
         return this;
-    }
+    }*/
 
     public Instructor addComment(Comment comment) {
         comment.setInstructor(this);
         this.comments.add(comment);
         return this;
     }
+
     public Instructor addSport(SportType sportType){
         sportType.getInstructors().add(this);
         this.knownSports.add(sportType);

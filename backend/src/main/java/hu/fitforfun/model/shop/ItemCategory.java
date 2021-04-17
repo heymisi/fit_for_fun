@@ -1,10 +1,8 @@
 package hu.fitforfun.model.shop;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -14,12 +12,15 @@ import java.util.Set;
 // @Data --known bug ??
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class ItemCategory extends BaseEntity {
 
     @Column(name = "category_name")
     private String categoryName;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Set<ShopItem> items;
 

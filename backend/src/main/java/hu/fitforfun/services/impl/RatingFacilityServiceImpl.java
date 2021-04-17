@@ -1,6 +1,7 @@
+/*
 package hu.fitforfun.services.impl;
 
-import hu.fitforfun.model.SportFacility;
+import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.rating.FacilityRating;
 import hu.fitforfun.model.request.RatingRequestModel;
 import hu.fitforfun.services.RatingService;
@@ -25,3 +26,4 @@ public class RatingFacilityServiceImpl implements RatingService<SportFacility> {
         return returnRating;
     }
 }
+*/

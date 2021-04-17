@@ -3,7 +3,6 @@ package hu.fitforfun.services;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.Exercise;
-import hu.fitforfun.model.Instructor;
 import hu.fitforfun.model.user.User;
 
 import java.util.List;

@@ -1,6 +1,5 @@
 package hu.fitforfun.repositories;
 
-import hu.fitforfun.model.TrainingSession;
 import hu.fitforfun.model.shop.TransactionItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 

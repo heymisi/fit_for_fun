@@ -2,15 +2,12 @@ package hu.fitforfun.controller;
 
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
-import hu.fitforfun.model.SportFacility;
-import hu.fitforfun.model.user.User;
+import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.services.SportFacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/facilities")
@@ -21,7 +18,7 @@ public class SportFacilityController {
 
 
     @GetMapping("")
-    public List<SportFacility> getSportFacilities(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public Page<SportFacility> getSportFacilities(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
         return sportFacilityService.listSportFacilities(page, limit);
     }
 
@@ -61,7 +58,31 @@ public class SportFacilityController {
             return Response.createErrorResponse(e.getErrorCode());
         }
     }
-    @PostMapping("/{id}/rate")
+
+    @GetMapping("/search/{keyword}")
+    public Page<SportFacility> searchFacilityByNameContaining
+            (@PathVariable String keyword,
+             @RequestParam(value = "page", defaultValue = "0") int page,
+             @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        System.err.println(keyword);
+        return sportFacilityService.findByNameContaining(keyword, PageRequest.of(page, limit));
+    }
+
+    @GetMapping("/search/city/{city}")
+    public Page<SportFacility> searchFacilityByCity
+            (@PathVariable String city,
+             @RequestParam(value = "page", defaultValue = "0") int page,
+             @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        return sportFacilityService.findByCity(city, PageRequest.of(page, limit));
+    }
+
+    @GetMapping("/sport/{id}")
+    public Page<SportFacility> getFacilityBySportId(@PathVariable Long id, @RequestParam(value = "page", defaultValue = "0") int page,
+                                                   @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        return sportFacilityService.listFacilitiesBySportId(id, page, limit);
+    }
+
+   /* @PostMapping("/{id}/rate")
     public Response rateSportFacility(@PathVariable Long id, @RequestParam(value = "value") Double value) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -69,7 +90,7 @@ public class SportFacilityController {
         } catch (FitforfunException e) {
             return Response.createErrorResponse(e.getErrorCode());
         }
-    }
+    }*/
 }
 
 

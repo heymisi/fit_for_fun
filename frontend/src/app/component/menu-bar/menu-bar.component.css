@@ -1,0 +1,11 @@
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.fixed-top{
+    position:fixed;
+    top:0;
+    right:0;
+    left:250px;
+    height:75px;
+    z-index:3
+}
+a.nav-link{
+    font-size: large;
+}

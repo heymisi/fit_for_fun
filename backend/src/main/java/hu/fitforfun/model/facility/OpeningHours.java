@@ -1,13 +1,15 @@
-package hu.fitforfun.model;
+package hu.fitforfun.model.facility;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.enums.WeekDays;
+import hu.fitforfun.model.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +17,8 @@ import java.util.List;
 @Entity
 @ToString
 @Table(name = "opening_hours_table")
+@JsonIdentityInfo(scope= OpeningHours.class,generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class OpeningHours extends BaseEntity {
 
     @Column(name = "day", nullable = false)

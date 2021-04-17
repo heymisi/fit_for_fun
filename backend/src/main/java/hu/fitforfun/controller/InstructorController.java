@@ -1,9 +1,12 @@
 package hu.fitforfun.controller;
 
-import hu.fitforfun.model.Instructor;
-import hu.fitforfun.model.SportFacility;
+import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.exception.Response;
+import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.repositories.InstructorRepository;
+import hu.fitforfun.services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +20,21 @@ public class InstructorController {
     @Autowired
     private InstructorRepository instructorRepository;
 
+    @Autowired
+    private InstructorService instructorService;
 
     @GetMapping("")
-    public ResponseEntity<Iterable<Instructor>> getInstructors() {
-        return ResponseEntity.ok(instructorRepository.findAll());
+    public Page<Instructor> getInstructors(@RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        return instructorService.listInstructors(page,limit);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Instructor> get(@PathVariable Long id) {
-        Optional<Instructor> instructor = instructorRepository.findById(id);
-        if (instructor.isPresent()) {
-            return ResponseEntity.ok(instructor.get());
-        } else {
-            return ResponseEntity.notFound().build();
+    public Response get(@PathVariable Long id) {
+        try {
+            return Response.createOKResponse(instructorService.getInstructorById(id));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
         }
     }
 

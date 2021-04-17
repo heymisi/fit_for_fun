@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 
 public class TokenUtils {
+
     public static boolean hasTokenExpired(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(SecurityConstants.TOKEN_SECRET)

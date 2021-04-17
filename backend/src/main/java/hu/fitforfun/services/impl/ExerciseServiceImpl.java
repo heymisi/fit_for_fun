@@ -4,7 +4,6 @@ import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.Exercise;
-import hu.fitforfun.model.Instructor;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.ExerciseRepository;
 import hu.fitforfun.services.ExerciseService;
@@ -12,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ExerciseServiceImpl implements ExerciseService {
     @Autowired
     ExerciseRepository exerciseRepository;

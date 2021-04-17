@@ -5,6 +5,7 @@ import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.shop.ShopItem;
 import hu.fitforfun.model.shop.Transaction;
 import hu.fitforfun.model.user.User;
+import hu.fitforfun.repositories.TransactionItemRepository;
 import hu.fitforfun.repositories.TransactionRepository;
 import hu.fitforfun.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +14,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @Autowired
+    TransactionItemRepository transactionItemRepository;
 
     @Override
     public Transaction getTransactionById(Long id) throws FitforfunException {
@@ -49,9 +55,18 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction createTransaction(Transaction transaction) throws FitforfunException {
+        /*if(transaction.getTransactionItems() == null){
+            transaction.setTransactionItems(new ArrayList<>());
+        }*/
+        transaction.setSumTotal(0D);
         transaction.getTransactionItems().forEach(transactionItem -> {
           //  transactionItem.setPrice(transactionItem.getShopItem().getPrice().doubleValue() * transactionItem.getQuantity());
+            transactionItemRepository.save(transactionItem);
+
+            transaction.setSumTotal(transaction.getSumTotal() + transactionItem.getPrice());
         });
+
+        transaction.setTrackingNumber(UUID.randomUUID().toString());
         return transactionRepository.save(transaction);
     }
 

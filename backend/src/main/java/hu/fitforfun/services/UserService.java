@@ -14,7 +14,7 @@ public interface UserService extends UserDetailsService {
 
     List<User> listUsers(int page, int limit);
 
-    User createUser(User user, String role) throws FitforfunException;
+    User createUser(User user, String role) throws Exception;
 
     User updateUser(Long id, User user) throws FitforfunException;
 

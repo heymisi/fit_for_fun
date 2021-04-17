@@ -5,6 +5,7 @@ import hu.fitforfun.model.shop.ShopItem;
 import hu.fitforfun.repositories.ItemCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,5 +21,10 @@ public class ItemCategoryController {
     @GetMapping("")
     public List<ItemCategory> getCategories() {
         return itemCategoryRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ItemCategory getCategoryById(@PathVariable Long id){
+        return itemCategoryRepository.findById(id).get();
     }
 }

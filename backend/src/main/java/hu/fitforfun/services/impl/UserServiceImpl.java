@@ -5,6 +5,7 @@ import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.user.PasswordResetTokenEntity;
 import hu.fitforfun.model.user.User;
+import hu.fitforfun.repositories.AddressRepository;
 import hu.fitforfun.repositories.PasswordResetTokenEntityRepository;
 import hu.fitforfun.repositories.RoleRepository;
 import hu.fitforfun.repositories.UserRepository;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -69,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user, String role) throws FitforfunException {
+    public User createUser(User user, String role) throws Exception {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new FitforfunException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
@@ -79,8 +83,14 @@ public class UserServiceImpl implements UserService {
         user.setEmailVerificationToken(TokenUtils.generateToken(user.getEmail(),SecurityConstants.EXPIRATION_TIME));
         user.setEmailVerificationStatus(false);
         user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role))));
+        if(user.getShippingAddress() != null){
+            addressRepository.save(user.getShippingAddress());
+        }
+        if(user.getBillingAddress() != null) {
+            addressRepository.save(user.getBillingAddress());
+        }
         System.err.println(Roles.ROLE_USER.name());
-        //new EmailServiceImpl().verifyEmail(user);
+        //new EmailServiceImpl().sendRegistrationMail(user);
         return userRepository.save(user);
     }
 

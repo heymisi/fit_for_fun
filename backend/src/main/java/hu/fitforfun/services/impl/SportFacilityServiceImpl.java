@@ -3,25 +3,21 @@ package hu.fitforfun.services.impl;
 import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
+import hu.fitforfun.model.address.City;
 import hu.fitforfun.model.user.User;
-import hu.fitforfun.model.rating.FacilityRating;
-import hu.fitforfun.model.SportFacility;
-import hu.fitforfun.repositories.CommentRepository;
-import hu.fitforfun.repositories.FacilityRatingRepository;
-import hu.fitforfun.repositories.OpeningHoursRepository;
-import hu.fitforfun.repositories.SportFacilityRepository;
-import hu.fitforfun.services.RatingService;
+import hu.fitforfun.model.facility.SportFacility;
+import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.SportFacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -34,10 +30,14 @@ public class SportFacilityServiceImpl implements SportFacilityService {
     OpeningHoursRepository openingHoursRepository;
 
     @Autowired
-    FacilityRatingRepository facilityRatingRepository;
+    ContactDataRepository contactDataRepository;
+
+/*    @Autowired
+    FacilityRatingRepository facilityRatingRepository;*/
 
     @Autowired
-    RatingService ratingService;
+    CityRepository cityRepository;
+
 
     @Autowired
     CommentRepository commentRepository;
@@ -52,13 +52,12 @@ public class SportFacilityServiceImpl implements SportFacilityService {
     }
 
     @Override
-    public List<SportFacility> listSportFacilities(int page, int limit) {
+    public Page<SportFacility> listSportFacilities(int page, int limit) {
         if (page > 0) page--;
 
         Pageable pageableRequest = PageRequest.of(page, limit);
         Page<SportFacility> sportFacilities = sportFacilityRepository.findAll(pageableRequest);
-        List<SportFacility> returnValue = sportFacilities.getContent();
-        return returnValue;
+        return sportFacilities;
     }
 
     @Override
@@ -66,8 +65,10 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         if (sportFacilityRepository.findByName(sportFacility.getName()).isPresent()) {
             throw new FitforfunException(ErrorCode.SPORT_FACILITY_ALREADY_EXISTS);
         }
-        sportFacility.setRatings(new ArrayList<>());
+        //sportFacility.setRatings(new ArrayList<>());
+ 
         sportFacility.setComments(new ArrayList<>());
+        sportFacility.setInstructors(new ArrayList<>());
         return sportFacilityRepository.save(sportFacility);
     }
 
@@ -90,7 +91,7 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         sportFacilityRepository.save(updatedSportFacility);
         return updatedSportFacility;
     }
-
+/*
     @Override
     public FacilityRating rateSportFacility(User user, Long facilityId, Double value) throws FitforfunException {
         Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(facilityId);
@@ -109,7 +110,7 @@ public class SportFacilityServiceImpl implements SportFacilityService {
 
         return facilityRatingRepository.save(rating);
     }
-
+*/
     @Override
     public SportFacility commentSportFacility(User user, Long facilityId, Comment comment) throws FitforfunException {
         Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(facilityId);
@@ -126,6 +127,11 @@ public class SportFacilityServiceImpl implements SportFacilityService {
     }
 
     @Override
+    public Page<SportFacility> findByNameContaining(String keyword, Pageable pageable) {
+        return sportFacilityRepository.findByNameContainingIgnoreCase(keyword,pageable);
+    }
+
+    @Override
     public void deleteSportFacility(Long id) throws FitforfunException {
         Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(id);
         if (!optionalSportFacility.isPresent()) {
@@ -133,12 +139,26 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         }
         sportFacilityRepository.delete(optionalSportFacility.get());
     }
+    @Override
+    public Page<SportFacility> findByCity(String city, Pageable pageable){
+        City cityName = cityRepository.findByCityNameIgnoreCase(city);
+        if(cityName == null){
+            return new PageImpl<>(new ArrayList<>());
+        }
+        return sportFacilityRepository.findByAddressCity(cityName,pageable);
+    }
 
+    @Override
+    public Page<SportFacility> listFacilitiesBySportId(Long id, int page, int limit) {
+        Pageable pageableRequest = PageRequest.of(page, limit);
+        return sportFacilityRepository.findByAvailableSportsIdIn(Arrays.asList(id), pageableRequest);
+    }
 
+/*
     public boolean isFacilityAlreadyRatedByUser(SportFacility facility, User user) {
         Optional<FacilityRating> rating = facilityRatingRepository.findBySportFacilityAndUser(facility, user);
         if (rating.isPresent()) return true;
         return false;
     }
-
+*/
 }

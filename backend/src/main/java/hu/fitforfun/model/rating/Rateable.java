@@ -5,7 +5,9 @@ import hu.fitforfun.model.BaseEntity;
 
 import java.util.List;
 
+/*
 public interface Rateable<T extends BaseEntity, R extends Rating> {
     List<R> getRatings();
     T addRating(R r);
 }
+*/

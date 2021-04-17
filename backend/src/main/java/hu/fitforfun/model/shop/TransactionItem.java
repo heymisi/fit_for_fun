@@ -1,27 +1,29 @@
 package hu.fitforfun.model.shop;
 
+import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "transaction_item")
+@JsonIdentityInfo(scope = TransactionItem.class,generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class TransactionItem extends BaseEntity {
-/*
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*
+    @JsonBackReference
+    @ManyToOne()
     @JoinColumn(name = "shop_item_id")
     private ShopItem shopItem;
 */
     private Integer quantity;
 
     private Double price;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
 }

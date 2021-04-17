@@ -1,7 +1,8 @@
+/*
 package hu.fitforfun.model.rating;
 
-import hu.fitforfun.model.Instructor;
-import hu.fitforfun.model.SportFacility;
+import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.facility.SportFacility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,3 +18,4 @@ public class InstructorRating extends Rating{
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 }
+*/

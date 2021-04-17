@@ -1,5 +1,6 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css");
 
 
 @font-face{
@@ -22,13 +23,15 @@
 }
 
 body{
-    font-family: 'Playfair Display', sans-serif;;
     font-weight:400;
     font-size:16px;
     line-height:1.625;
-    color:#666;
+    color:#edeff2;
     -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale
+    -moz-osx-font-smoothing:grayscale;
+    min-height:100vh;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+
 }
 
 ul{
@@ -65,7 +68,8 @@ h1,h2,h3,h4,h5,h6{
     color:#333;
     font-weight:700;
     margin:0;
-    line-height:1.2
+    line-height:1.2;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
 }
 
 h1{
@@ -115,18 +119,20 @@ a,a:hover{
 
 .page-wrapper{
     overflow:hidden;
-    background:#e5e5e5;
+    background:#edeff2;
     padding-bottom:8vh
 }
 
 .page-container{
-    background:#e5e5e5;
-    padding-left:200px
+    background:#edeff2;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+
 }
 
 .main-content{
     padding-top:116px;
-    min-height:100vh
+    min-height:100vh;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
 }
 
 aside.menu-sidebar.d-none.d-lg-block.clr{
@@ -235,7 +241,7 @@ input.au-input.au-input-xl{
     line-height:43px;
     border:1px solid #e5e5e5;
     font-size:14px;
-    color:#666;
+    color:black;
     padding:0 17px;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
@@ -284,7 +290,8 @@ input.au-input.au-input-xl{
     display:-webkit-flex;
     display:-moz-box;
     display:-ms-flexbox;
-    display:flex
+    display:flex;
+    vertical-align: middle;
 }
 
 .au-btn-submit{
@@ -303,6 +310,7 @@ input.au-input.au-input-xl{
     background:#05143f
 }
 
+  
 .au-btn-submit>i{
     font-size:20px;
     color:#fff;
@@ -323,13 +331,10 @@ input.au-input.au-input-xl{
  */
 
 .menu-sidebar{
-    width:200px;
+    width:250px;
     position:fixed;
-    left:0;
     top:0;
-    bottom:0;
     background:#fff;
-    overflow-y:auto
 }
 
 .menu-sidebar .logo{
@@ -371,7 +376,7 @@ input.au-input.au-input-xl{
 }
 
 .navbar-sidebar{
-    padding:35px;
+    padding:5px;
     padding-bottom:0
 }
 
@@ -389,6 +394,9 @@ input.au-input.au-input-xl{
 .navbar-sidebar .navbar-list li a:hover{
     color:#0da8e4
 }
+
+::ng-deep .cdk-overlay-connected-position-bounding-box{top:90px !important; position:absolute;}
+
 
 /* 
  * ----------------------------
@@ -729,7 +737,12 @@ table.table.table-bordered th{
     color:#0da8e4
 }
 .detail-section{
-    margin-top:60px
+    margin-top:60px;
+    font-size: large;
+}
+
+.detail-img{
+    width: 30%;
 }
 /**/
 
@@ -762,6 +775,13 @@ a.primary-btn:hover{
 .active-link {
   font-weight: bold;
 }
+
+.ok-button{
+    background-color: #FFC312;
+    width: 200px;
+    font-size: large;
+}
+
 
 /* 
  * ----------------------------
@@ -842,7 +862,6 @@ footer ul li{
     }
 }
 
-
 @media (max-width:991px){
      .section-content-p30{
         padding:0
@@ -850,7 +869,7 @@ footer ul li{
     .page-container{
         position:relative;
         top:88px;
-        padding-left:0
+        padding-left:0;
     }
      .page-wrapper{
         background:#e5e5e5;
@@ -900,6 +919,7 @@ footer ul li{
         -ms-flex-pack:justify;
         justify-content:space-between
     }
+
     .menu-sidebar2{
         top:0;
         right:-300px;
@@ -947,7 +967,7 @@ footer ul li{
         margin-right:15px
     }
         .main-content.page-m{
-        padding:10% 0!important
+        padding: 10% 30% 10% 5%
     }
     .header-mobile .navbar-mobile{
         display:none;
@@ -1044,3 +1064,6 @@ footer ul li{
         padding:8px 0
     }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

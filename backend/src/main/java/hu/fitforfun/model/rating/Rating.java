@@ -1,3 +1,4 @@
+/*
 package hu.fitforfun.model.rating;
 
 import hu.fitforfun.model.BaseEntity;
@@ -23,3 +24,4 @@ public class Rating extends BaseEntity {
         value = 0.0;
     }
 }
+*/
