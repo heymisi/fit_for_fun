@@ -6,6 +6,8 @@ import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.user.User;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface InstructorService {
     Instructor getInstructorById(Long id) throws FitforfunException;
 
@@ -21,4 +23,5 @@ public interface InstructorService {
 
     Instructor commentInstructor(User user, Long instructorId, Comment comment) throws FitforfunException;
 
+    List<Instructor> listInstructorsByAvailableFacility();
 }

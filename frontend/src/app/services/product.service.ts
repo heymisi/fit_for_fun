@@ -100,6 +100,9 @@ export class ProductService {
   saveProduct(product: Product):Observable<any>{
     return this.httpClient.post<any>(this.baseUrl,product);
   }
+  modifyProduct(id:number, product: Product):Observable<any>{
+    return this.httpClient.put<any>(`${this.baseUrl}/${id}`, product);
+  }
   addImage(id: number, file: any):Observable<any>{
     return this.httpClient.post<any>(`${this.baseUrl}/${id}/uploadImage`, file);
   }

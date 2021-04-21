@@ -3,11 +3,13 @@ package hu.fitforfun.controller;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.facility.SportFacility;
+import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.services.SportFacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/facilities")
@@ -80,6 +82,25 @@ public class SportFacilityController {
     public Page<SportFacility> getFacilityBySportId(@PathVariable Long id, @RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "limit", defaultValue = "5") int limit) {
         return sportFacilityService.listFacilitiesBySportId(id, page, limit);
+    }
+
+    @PostMapping("/{id}/uploadImage")
+    public Response uploadImage(@PathVariable Long id,@RequestParam("imageFile") MultipartFile file)   {
+        try{
+            sportFacilityService.addImage(id,file);
+            return Response.createOKResponse("Success Image upload");
+        }catch (Exception e){
+            return Response.createErrorResponse("Error during image upload");
+        }
+    }
+    @PostMapping("/{id}/addInstructor")
+    public Response addInstructor(@PathVariable Long id, @RequestParam("Instructor")Instructor instructor)   {
+        try{
+            sportFacilityService.addInstructor(id,instructor);
+            return Response.createOKResponse("Success Instructor added");
+        }catch (Exception e){
+            return Response.createErrorResponse("Error during Instructor added");
+        }
     }
 
    /* @PostMapping("/{id}/rate")

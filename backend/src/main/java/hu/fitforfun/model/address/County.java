@@ -1,8 +1,6 @@
 package hu.fitforfun.model.address;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.BaseEntity;
 import lombok.Data;
 
@@ -15,12 +13,11 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "counties_table")
-@JsonIdentityInfo(scope= County.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class County extends BaseEntity {
     @Column(name = "county_name")
     private String countyName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "county")
     List<City> cities;
 

@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 
 @Data
 @Entity
-@JsonIdentityInfo(scope= ContactData.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class ContactData extends BaseEntity{
     private String email;
     private String telNumber;

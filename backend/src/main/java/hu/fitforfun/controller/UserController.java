@@ -104,7 +104,7 @@ public class UserController {
     @GetMapping("/email-check/{email}")
     public Boolean isEmailAlreadyUsed(@PathVariable String email) {
         System.err.println(email);
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByContactDataEmail(email).isPresent()) {
             System.err.println("true");
             return true;
         } else {

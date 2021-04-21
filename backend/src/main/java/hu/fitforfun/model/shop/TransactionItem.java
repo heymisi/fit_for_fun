@@ -11,8 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "transaction_item")
-@JsonIdentityInfo(scope = TransactionItem.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TransactionItem extends BaseEntity {
     /*
     @JsonBackReference

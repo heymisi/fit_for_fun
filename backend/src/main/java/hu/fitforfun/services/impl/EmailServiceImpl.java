@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendRegistrationMail(User user) throws Exception {
         HashMap<String, Object> templateData = new HashMap<>();
-        templateData.put(RECIPIENT, user.getEmail());
+        templateData.put(RECIPIENT, user.getContactData().getEmail());
         templateData.put("userFirstName", user.getFirstName());
         templateData.put("userLastName", user.getLastName());
         templateData.put("date", new Date());

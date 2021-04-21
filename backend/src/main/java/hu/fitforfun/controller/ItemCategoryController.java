@@ -27,4 +27,8 @@ public class ItemCategoryController {
     public ItemCategory getCategoryById(@PathVariable Long id){
         return itemCategoryRepository.findById(id).get();
     }
+    @GetMapping("/byName/{name}")
+    public ItemCategory getCategoryByName(@PathVariable String name){
+        return itemCategoryRepository.findByCategoryName(name).get();
+    }
 }

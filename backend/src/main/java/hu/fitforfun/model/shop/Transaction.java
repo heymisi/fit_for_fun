@@ -18,8 +18,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Entity(name = "transaction")
-@JsonIdentityInfo(scope = Transaction.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Transaction extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchaser_id")

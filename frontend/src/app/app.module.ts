@@ -82,6 +82,9 @@ import {RatingModule} from 'primeng/rating';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import {RadioButtonModule} from 'primeng/radiobutton';
+import { AdminTransactionsComponent } from './component/admin/admin-transactions/admin-transactions.component';
+import {} from 'primeng/multiselect';
+import {InputMaskModule} from 'primeng/inputmask';
 
 registerLocaleData(localeHu, 'hu');
 
@@ -121,6 +124,7 @@ registerLocaleData(localeHu, 'hu');
     AdminInstructorsComponent,
     AdminFacilitesComponent,
     AdminUsersComponent,
+    AdminTransactionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -165,7 +169,7 @@ registerLocaleData(localeHu, 'hu');
     RatingModule,
     InputNumberModule,
     RadioButtonModule,
-
+    InputMaskModule
   ],
   providers: [ProductService, MessageService, ConfirmationService
   ],

@@ -3,22 +3,28 @@ package hu.fitforfun.services.impl;
 import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
+import hu.fitforfun.model.Image;
 import hu.fitforfun.model.address.City;
+import hu.fitforfun.model.facility.FacilityPricing;
+import hu.fitforfun.model.facility.OpeningHours;
+import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.shop.ShopItem;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.SportFacilityService;
+import hu.fitforfun.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class SportFacilityServiceImpl implements SportFacilityService {
@@ -27,10 +33,19 @@ public class SportFacilityServiceImpl implements SportFacilityService {
     SportFacilityRepository sportFacilityRepository;
 
     @Autowired
+    InstructorRepository instructorRepository;
+
+    @Autowired
     OpeningHoursRepository openingHoursRepository;
+
+
+    @Autowired
+    FacilityPricingRepository facilityPricingRepository;
 
     @Autowired
     ContactDataRepository contactDataRepository;
+    @Autowired
+    AddressRepository addressRepository;
 
 /*    @Autowired
     FacilityRatingRepository facilityRatingRepository;*/
@@ -65,11 +80,26 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         if (sportFacilityRepository.findByName(sportFacility.getName()).isPresent()) {
             throw new FitforfunException(ErrorCode.SPORT_FACILITY_ALREADY_EXISTS);
         }
-        //sportFacility.setRatings(new ArrayList<>());
- 
         sportFacility.setComments(new ArrayList<>());
+        List<Instructor> instructors = sportFacility.getInstructors();
+        List<OpeningHours> openingHours = sportFacility.getOpeningHours();
+        List<FacilityPricing> pricing = sportFacility.getPricing();
         sportFacility.setInstructors(new ArrayList<>());
-        return sportFacilityRepository.save(sportFacility);
+        SportFacility saved = sportFacilityRepository.save(sportFacility);
+        instructors.forEach(instructor -> {
+            saved.addInstructor(instructor);
+            instructorRepository.save(instructor);
+        });
+        openingHours.forEach(hours -> {
+            hours.setSportFacility(saved);
+            openingHoursRepository.save(hours);
+        });
+        pricing.forEach(price ->{
+            price.setSportFacility(saved);
+            facilityPricingRepository.save(price);
+        });
+
+        return saved;
     }
 
     @Override
@@ -82,35 +112,75 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         if (sportFacility.getName() != null) {
             updatedSportFacility.setName(sportFacility.getName());
         }
-        if (sportFacility.getAddress() != null) {
-            updatedSportFacility.setAddress(sportFacility.getAddress());
+        if (sportFacility.getAddress() != updatedSportFacility.getAddress()) {
+            updatedSportFacility.getAddress().setCountry(sportFacility.getAddress().getCountry());
+            updatedSportFacility.getAddress().setZipCode(sportFacility.getAddress().getZipCode());
+            updatedSportFacility.getAddress().setStreet(sportFacility.getAddress().getStreet());
+            updatedSportFacility.getAddress().setCity(sportFacility.getAddress().getCity());
+            updatedSportFacility.getAddress().setZipCode(sportFacility.getAddress().getZipCode());
         }
-        if (sportFacility.getOpeningHours() != null) {
-            updatedSportFacility.setOpeningHours(sportFacility.getOpeningHours());
+        if (sportFacility.getOpeningHours() != updatedSportFacility.getOpeningHours()) {
+            for (int i = 0; i < sportFacility.getOpeningHours().size(); i++) {
+                updatedSportFacility.getOpeningHours().get(i).setOpenTime(sportFacility.getOpeningHours().get(i).getOpenTime());
+                updatedSportFacility.getOpeningHours().get(i).setCloseTime(sportFacility.getOpeningHours().get(i).getCloseTime());
+            }
         }
-        sportFacilityRepository.save(updatedSportFacility);
-        return updatedSportFacility;
-    }
-/*
-    @Override
-    public FacilityRating rateSportFacility(User user, Long facilityId, Double value) throws FitforfunException {
-        Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(facilityId);
-        if (!optionalSportFacility.isPresent()) {
-            throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
+        if (sportFacility.getInstructors() != updatedSportFacility.getInstructors()) {
+            System.err.println(sportFacility.getInstructors());
+            updatedSportFacility.getInstructors().forEach(instructor -> {
+                instructor.setSportFacility(null);
+            });
+            sportFacility.getInstructors().forEach(instructor -> {
+                updatedSportFacility.addInstructor(instructor);
+                instructorRepository.save(instructor);
+            });
         }
-        SportFacility sportFacility = optionalSportFacility.get();
-        if (isFacilityAlreadyRatedByUser(sportFacility, user)) {
-            throw new FitforfunException(ErrorCode.SPORT_FACILITY_ALREADY_RATED);
+        if (sportFacility.getAvailableSports() != updatedSportFacility.getAvailableSports()) {
+            updatedSportFacility.setAvailableSports(sportFacility.getAvailableSports());
+        }
+        if (sportFacility.getImage() != updatedSportFacility.getImage()) {
+            updatedSportFacility.setImage(sportFacility.getImage());
+        }
+        if (sportFacility.getPricing() != updatedSportFacility.getPricing()) {
+            for (int i = 0; i < sportFacility.getPricing().size(); i++) {
+                updatedSportFacility.getPricing().get(i).setSingleTicketPrice(sportFacility.getPricing().get(i).getSingleTicketPrice());
+                updatedSportFacility.getPricing().get(i).setSessionTicketPrice(sportFacility.getPricing().get(i).getSessionTicketPrice());
+            }
+        }
+        if (sportFacility.getComments() != updatedSportFacility.getComments()) {
+            updatedSportFacility.setComments(sportFacility.getComments());
+        }
+        if (sportFacility.getDescription() != null) {
+            updatedSportFacility.setDescription(sportFacility.getDescription());
+        }
+        if (sportFacility.getContactData() != updatedSportFacility.getContactData()) {
+            updatedSportFacility.getContactData().setTelNumber(sportFacility.getContactData().getTelNumber());
+            updatedSportFacility.getContactData().setEmail(sportFacility.getContactData().getEmail());
         }
 
-        FacilityRating rating = new FacilityRating();
-        rating.setValue(value);
-        rating.setUser(user);
-        sportFacility.addRating(rating);
-
-        return facilityRatingRepository.save(rating);
+        return sportFacilityRepository.save(updatedSportFacility);
     }
-*/
+
+    /*
+        @Override
+        public FacilityRating rateSportFacility(User user, Long facilityId, Double value) throws FitforfunException {
+            Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(facilityId);
+            if (!optionalSportFacility.isPresent()) {
+                throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
+            }
+            SportFacility sportFacility = optionalSportFacility.get();
+            if (isFacilityAlreadyRatedByUser(sportFacility, user)) {
+                throw new FitforfunException(ErrorCode.SPORT_FACILITY_ALREADY_RATED);
+            }
+
+            FacilityRating rating = new FacilityRating();
+            rating.setValue(value);
+            rating.setUser(user);
+            sportFacility.addRating(rating);
+
+            return facilityRatingRepository.save(rating);
+        }
+    */
     @Override
     public SportFacility commentSportFacility(User user, Long facilityId, Comment comment) throws FitforfunException {
         Optional<SportFacility> optionalSportFacility = sportFacilityRepository.findById(facilityId);
@@ -128,7 +198,7 @@ public class SportFacilityServiceImpl implements SportFacilityService {
 
     @Override
     public Page<SportFacility> findByNameContaining(String keyword, Pageable pageable) {
-        return sportFacilityRepository.findByNameContainingIgnoreCase(keyword,pageable);
+        return sportFacilityRepository.findByNameContainingIgnoreCase(keyword, pageable);
     }
 
     @Override
@@ -137,21 +207,48 @@ public class SportFacilityServiceImpl implements SportFacilityService {
         if (!optionalSportFacility.isPresent()) {
             throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
         }
+        SportFacility sportFacility = optionalSportFacility.get();
+        sportFacility.getInstructors().forEach(instructor -> {
+            instructor.setSportFacility(null);
+        });
         sportFacilityRepository.delete(optionalSportFacility.get());
     }
+
     @Override
-    public Page<SportFacility> findByCity(String city, Pageable pageable){
+    public Page<SportFacility> findByCity(String city, Pageable pageable) {
         City cityName = cityRepository.findByCityNameIgnoreCase(city);
-        if(cityName == null){
+        if (cityName == null) {
             return new PageImpl<>(new ArrayList<>());
         }
-        return sportFacilityRepository.findByAddressCity(cityName,pageable);
+        return sportFacilityRepository.findByAddressCity(cityName, pageable);
     }
 
     @Override
     public Page<SportFacility> listFacilitiesBySportId(Long id, int page, int limit) {
         Pageable pageableRequest = PageRequest.of(page, limit);
         return sportFacilityRepository.findByAvailableSportsIdIn(Arrays.asList(id), pageableRequest);
+    }
+
+    @Override
+    public void addImage(Long id, MultipartFile multipartFile) throws Exception {
+        Optional<SportFacility> optionalFacility = sportFacilityRepository.findById(id);
+        if (!optionalFacility.isPresent()) {
+            throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
+        }
+        SportFacility sportFacility = optionalFacility.get();
+        sportFacility.setImage(new Image(multipartFile.getOriginalFilename(), multipartFile.getContentType(),
+                ImageUtils.compressBytes(multipartFile.getBytes())));
+        sportFacilityRepository.save(sportFacility);
+    }
+
+    @Override
+    public void addInstructor(Long id, Instructor instructor) throws Exception {
+        Optional<SportFacility> optionalFacility = sportFacilityRepository.findById(id);
+        if (!optionalFacility.isPresent()) {
+            throw new FitforfunException(ErrorCode.SPORT_FACILITY_NOT_EXISTS);
+        }
+        SportFacility sportFacility = optionalFacility.get();
+        sportFacility.addInstructor(instructor);
     }
 
 /*

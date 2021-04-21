@@ -1,11 +1,14 @@
 package hu.fitforfun.model.instructor;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.model.BaseEntity;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.SportType;
+import hu.fitforfun.model.facility.OpeningHours;
 import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.user.User;
 import lombok.AllArgsConstructor;
@@ -19,21 +22,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "instructor_table")
-@JsonIdentityInfo(scope = Instructor.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Instructor.class)
 public class Instructor extends BaseEntity {
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id")
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
   /*  @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<InstructorRating> ratings;
 */
-
     private String title;
-
     private String bio;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
@@ -55,6 +53,7 @@ public class Instructor extends BaseEntity {
     @JoinColumn(name = "sport_facility_id")
     private SportFacility sportFacility;
 
+    private int rating = 5;
 
 
   /*  @Override

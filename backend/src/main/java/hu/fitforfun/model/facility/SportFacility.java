@@ -1,7 +1,6 @@
 package hu.fitforfun.model.facility;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.*;
 import hu.fitforfun.model.address.Address;
 import hu.fitforfun.model.instructor.Instructor;
@@ -10,15 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "facility_table")
-@JsonIdentityInfo(scope= SportFacility.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = SportFacility.class)
 public class SportFacility extends BaseEntity {
 
     @Column(name = "name")
@@ -26,7 +24,6 @@ public class SportFacility extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
-
 
     @Lob
     private String description;
@@ -43,25 +40,19 @@ public class SportFacility extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "sports_id", referencedColumnName = "id"))
     private List<SportType> availableSports ;
 
+    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "sportFacility")
     private List<Instructor> instructors;
-    /*
-    @OneToMany(mappedBy = "sportFacility")
-    private List<FacilityRating> ratings;
-*/
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<Comment> comments;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<FacilityPricing> pricing;
-/*
-    @Override
-    public SportFacility addRating(FacilityRating facilityRating) {
-        facilityRating.setSportFacility(this);
-        this.ratings.add(facilityRating);
-        return this;
-    }
-*/
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Image image;
+
     public SportFacility addComment(Comment comment) {
         comment.setSportFacility(this);
         this.comments.add(comment);
@@ -77,19 +68,8 @@ public class SportFacility extends BaseEntity {
         this.availableSports.add(sportType);
         return this;
     }
-/*
-    @Override
-    public List<FacilityRating> getRatings() {
-        return ratings;
+    public SportFacility(){
+        instructors = new ArrayList<>();
     }
-    /*
-
-        @ManyToMany()
-        @JoinTable(name = "facility_instructors",
-                joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
-                inverseJoinColumns = @JoinColumn(name = "instructors_id",referencedColumnName = "id"))
-        private List<Instructor> instructors;
-         */
-
 
 }

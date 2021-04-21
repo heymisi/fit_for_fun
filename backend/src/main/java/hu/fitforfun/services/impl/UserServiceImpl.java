@@ -36,6 +36,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+
+
     @Autowired
     private PasswordResetTokenEntityRepository passwordResetTokenEntityRepository;
 
@@ -74,22 +76,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user, String role) throws Exception {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByContactDataEmail(user.getContactData().getEmail()).isPresent()) {
             throw new FitforfunException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // user.setRole(UserRole.USER);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setEmailVerificationToken(TokenUtils.generateToken(user.getEmail(),SecurityConstants.EXPIRATION_TIME));
+        user.setEmailVerificationToken(TokenUtils.generateToken(user.getContactData().getEmail(),SecurityConstants.EXPIRATION_TIME));
         user.setEmailVerificationStatus(false);
         user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role))));
-        if(user.getShippingAddress() != null){
-            addressRepository.save(user.getShippingAddress());
-        }
-        if(user.getBillingAddress() != null) {
-            addressRepository.save(user.getBillingAddress());
-        }
-        System.err.println(Roles.ROLE_USER.name());
         //new EmailServiceImpl().sendRegistrationMail(user);
         return userRepository.save(user);
     }
@@ -129,19 +124,19 @@ public class UserServiceImpl implements UserService {
     public boolean requestPasswordReset(String email) {
         boolean returnValue = false;
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByContactDataEmail(email);
         if (!optionalUser.isPresent()) {
             throw new UsernameNotFoundException(email);
         }
         User user = optionalUser.get();
-        String token = TokenUtils.generateToken(user.getEmail(), SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
+        String token = TokenUtils.generateToken(user.getContactData().getEmail(), SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
         PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
         passwordResetTokenEntity.setToken(token);
         passwordResetTokenEntity.setUserDetails(user);
         passwordResetTokenEntityRepository.save(passwordResetTokenEntity);
 
         returnValue = new EmailServiceImpl().sendPasswordResetRequest(user.getFirstName(),
-                user.getEmail(), token);
+                user.getContactData().getEmail(), token);
         return returnValue;
 
     }
@@ -169,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByContactDataEmail(email);
         if (!optionalUser.isPresent()) {
             throw new UsernameNotFoundException(email);
         }

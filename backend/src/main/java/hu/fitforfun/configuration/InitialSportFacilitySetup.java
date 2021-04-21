@@ -63,7 +63,7 @@ public class InitialSportFacilitySetup {
 
     @EventListener
     @Transactional
-    public void onApplicationEvent(ApplicationReadyEvent event) throws FitforfunException {
+    public void onApplicationEvent(ApplicationReadyEvent event) throws Exception {
         SportFacility sportFacility = new SportFacility();
 
         Address address = new Address();
@@ -79,47 +79,40 @@ public class InitialSportFacilitySetup {
         User user2 = createUser2();
 
         OpeningHours openingHours = new OpeningHours();
-        openingHours.setDay(WeekDays.HÉTFŐ);
+        openingHours.setDay(WeekDays.Hétfő);
         openingHours.setOpenTime(10D);
         openingHours.setCloseTime(20D);
         openingHours.setIsClosedToday(false);
-        openingHours.setSportFacility(sportFacility);
         OpeningHours openingHours2 = new OpeningHours();
-        openingHours2.setDay(WeekDays.KEDD);
+        openingHours2.setDay(WeekDays.Kedd);
         openingHours2.setOpenTime(12D);
         openingHours2.setCloseTime(22D);
         openingHours2.setIsClosedToday(false);
-        openingHours2.setSportFacility(sportFacility);
         OpeningHours openingHours3 = new OpeningHours();
-        openingHours3.setDay(WeekDays.SZERDA);
+        openingHours3.setDay(WeekDays.Szerda);
         openingHours3.setOpenTime(12D);
         openingHours3.setCloseTime(22D);
         openingHours3.setIsClosedToday(false);
-        openingHours3.setSportFacility(sportFacility);
         OpeningHours openingHours4 = new OpeningHours();
-        openingHours4.setDay(WeekDays.CSÜTÖRTÖK);
+        openingHours4.setDay(WeekDays.Csütörtök);
         openingHours4.setOpenTime(7D);
         openingHours4.setCloseTime(20D);
         openingHours4.setIsClosedToday(false);
-        openingHours4.setSportFacility(sportFacility);
         OpeningHours openingHours5 = new OpeningHours();
-        openingHours5.setDay(WeekDays.PÉNTEK);
+        openingHours5.setDay(WeekDays.Péntek);
         openingHours5.setOpenTime(8D);
         openingHours5.setCloseTime(22D);
         openingHours5.setIsClosedToday(false);
-        openingHours5.setSportFacility(sportFacility);
         OpeningHours openingHours6 = new OpeningHours();
-        openingHours6.setDay(WeekDays.SZOMBAT);
+        openingHours6.setDay(WeekDays.Szombat);
         openingHours6.setOpenTime(9D);
         openingHours6.setCloseTime(22D);
         openingHours6.setIsClosedToday(false);
-        openingHours6.setSportFacility(sportFacility);
         OpeningHours openingHours7 = new OpeningHours();
-        openingHours7.setDay(WeekDays.VASÁRNAP);
+        openingHours7.setDay(WeekDays.Vasárnap);
         openingHours7.setOpenTime(12D);
         openingHours7.setCloseTime(22D);
         openingHours7.setIsClosedToday(false);
-        openingHours7.setSportFacility(sportFacility);
 
 
         SportType sportType5 = new SportType();
@@ -132,6 +125,13 @@ public class InitialSportFacilitySetup {
         sportTypeRepository.save(sportType6);
 
         Instructor instructor = createInstructor(user2);
+        Instructor instructor2 = createInstructor2(user);
+
+        SportType sportType222 = new SportType();
+        sportType222.setName("Szabadidős sport");
+        sportTypeRepository.save(sportType222);
+
+        instructor.addSport(sportType222);
         ContactData contactData = new ContactData();
         contactData.setTelNumber("702175709");
         contactData.setEmail("SportCsarnok@gmail.com");
@@ -158,9 +158,10 @@ public class InitialSportFacilitySetup {
                 "              possimus, veniam magni quis!");
         sportFacility.setContactData(contactData);
         sportFacility.setPricing(Arrays.asList(facilityPricing,facilityPricing2,facilityPricing3));
+        sportFacility.setInstructors(Arrays.asList(instructor));
         SportFacility savedFacility = service.createSportFacility(sportFacility);
-
-        savedFacility.addInstructor(instructor);
+     //   service.addInstructor(sportFacility.getId(), instructor);
+      //         savedFacility.addInstructor(instructor);
 //        sportFacilityRepository.save(savedFacility);
 
         Comment comment = new Comment();
@@ -176,7 +177,7 @@ public class InitialSportFacilitySetup {
         User adminUser = new User();
         adminUser.setFirstName("a");
         adminUser.setLastName("a");
-        adminUser.setEmail("a");
+        adminUser.getContactData().setEmail("a");
         adminUser.setEmailVerificationStatus(true);
         adminUser.setPassword("pass");
         return userRepository.save(adminUser);
@@ -186,7 +187,7 @@ public class InitialSportFacilitySetup {
         User adminUser = new User();
         adminUser.setFirstName("a2");
         adminUser.setLastName("a2");
-        adminUser.setEmail("a2");
+        adminUser.getContactData().setEmail("a2");
         adminUser.setEmailVerificationStatus(true);
         adminUser.setPassword("pass");
         return userRepository.save(adminUser);
@@ -197,17 +198,17 @@ public class InitialSportFacilitySetup {
 
         TrainingSession session = new TrainingSession();
         session.setClient(client);
-        session.setDay(WeekDays.PÉNTEK);
+        session.setDay(WeekDays.Péntek);
         session.setSessionStart(15d);
         session.setSessionEnd(16d);
         TrainingSession session2 = new TrainingSession();
         session2.setClient(client);
-        session2.setDay(WeekDays.PÉNTEK);
+        session2.setDay(WeekDays.Péntek);
         session2.setSessionStart(16d);
         session2.setSessionEnd(17d);
         TrainingSession session3 = new TrainingSession();
         session3.setClient(client);
-        session3.setDay(WeekDays.PÉNTEK);
+        session3.setDay(WeekDays.Péntek);
         session3.setSessionStart(16d);
         session3.setSessionEnd(17d);
 
@@ -224,7 +225,7 @@ public class InitialSportFacilitySetup {
         addressRepository.save(address);
 
         User user = new User();
-        user.setEmail("misis@gmail.com");
+        user.getContactData().setEmail("misis@gmail.com");
         user.setFirstName("instructor");
         user.setLastName("instructor");
         user.setPassword("pass");
@@ -245,6 +246,43 @@ public class InitialSportFacilitySetup {
             trainingSessionService.addTrainingSessionToClient(client.getId(),session2);
             trainingSessionService.addTrainingSessionToClient(client.getId(),session3);
 
+
+        } catch (FitforfunException e) {
+            System.err.println(e.getErrorCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return instructor;
+    }
+    @Transactional
+    private Instructor createInstructor2(User client) {
+
+        ContactData contactData = new ContactData();
+        contactData.setTelNumber("asd");
+        contactData.setEmail("asd@gmail.com");
+
+        Address address = new Address();
+        address.setCountry("Hungary");
+        address.setStreet("Pesti út 32");
+        address.setZipCode(2730);
+        address.setCounty("Pest");
+        address.setCity(cityRepository.findByCityNameIgnoreCase("Budapest"));
+        addressRepository.save(address);
+
+        User user = new User();
+        user.getContactData().setEmail("asd@gmail.com");
+        user.setFirstName("i22nstructor");
+        user.setLastName("i22nstructor");
+        user.setPassword("pass");
+        user.setContactData(contactData);
+        user.setShippingAddress(address);
+        Instructor instructor = new Instructor();
+        instructor.setTitle("Személyi edző");
+        instructor.setBio("Segítek célod elérésében bármi áron, nincs lehetetlen csak tehetetlen");
+        instructor.setUser(user);
+        try {
+            instructor = instructorService.createInstructor(instructor);
+            //  instructorService.addTrainingSession(instructor.getId(),session3);
 
         } catch (FitforfunException e) {
             System.err.println(e.getErrorCode());

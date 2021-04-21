@@ -13,8 +13,6 @@ import javax.persistence.Table;
 @Entity
 @Data
 @Table(name="address_table")
-@JsonIdentityInfo(scope= Address.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class Address extends BaseEntity {
 
     @Column(name = "country")

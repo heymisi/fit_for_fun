@@ -106,6 +106,7 @@ public class ShopItemServiceImpl implements ShopItemService {
             throw new FitforfunException(ErrorCode.SHOP_ITEM_ALREADY_EXISTS);
         }
         ShopItem updatedShopItem = optionalShopItem.get();
+        System.err.println(shopItem.toString());
         if (shopItem.getName() != null) {
             updatedShopItem.setName(shopItem.getName());
         }
@@ -115,14 +116,17 @@ public class ShopItemServiceImpl implements ShopItemService {
         if (shopItem.getDescription() != null) {
             updatedShopItem.setDescription(shopItem.getDescription());
         }
-        /*if(shopItem.getAvailableSizes() != null){
-            updatedShopItem.setAvailableSizes(shopItem.getAvailableSizes());
-        }*/
         if (shopItem.getPrice() != null) {
             updatedShopItem.setPrice(shopItem.getPrice());
         }
         if (shopItem.getUnitsInStock() != null) {
             updatedShopItem.setUnitsInStock(shopItem.getUnitsInStock());
+        }
+        if(shopItem.getSportType() != null){
+            updatedShopItem.setSportType(shopItem.getSportType());
+        }
+        if(shopItem.getImage() != null){
+            updatedShopItem.setImage(shopItem.getImage());
         }
         return shopItemRepository.save(updatedShopItem);
     }

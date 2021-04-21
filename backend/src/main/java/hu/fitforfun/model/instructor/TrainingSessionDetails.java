@@ -1,6 +1,7 @@
 package hu.fitforfun.model.instructor;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.model.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,8 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name = "training_session_details")
-@JsonIdentityInfo(scope = TrainingSessionDetails.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
-public class TrainingSessionDetails  extends BaseEntity {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class TrainingSessionDetails extends BaseEntity {
     private String name;
 
     private Integer monthlyPrice;
@@ -27,7 +27,7 @@ public class TrainingSessionDetails  extends BaseEntity {
     private Integer occasionPrice;
 
     private Integer durationMinutes;
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;

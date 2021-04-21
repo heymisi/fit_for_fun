@@ -1,6 +1,7 @@
 package hu.fitforfun.model.instructor;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.enums.WeekDays;
 import hu.fitforfun.model.BaseEntity;
@@ -16,8 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "instructor_time_sheet")
-@JsonIdentityInfo(scope = TrainingSession.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = TrainingSession.class)
 public class TrainingSession extends BaseEntity {
 
     @Column(name = "day", nullable = false)
@@ -30,10 +30,11 @@ public class TrainingSession extends BaseEntity {
     @Column(name = "session_end", nullable = false)
     private Double sessionEnd;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "client_id")
     private User client;
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;

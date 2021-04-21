@@ -2,6 +2,7 @@ package hu.fitforfun.model.shop;
 
 import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.*;
+import hu.fitforfun.model.user.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,17 +17,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity(name = "shop_item")
 public class ShopItem extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    /*
-    @OneToOne
-    @JoinColumn(name = "sport_type_id")
-    private SportType sportType;
-    */
     @Column(nullable = true)
     private BigDecimal price;
 
@@ -56,11 +53,6 @@ public class ShopItem extends BaseEntity {
     @JoinColumn(name = "sport_id")
     private SportType sportType;
 
-    /*
-    @JsonManagedReference
-    @OneToMany(mappedBy = "shopItem")
-    private List<TransactionItem> transactionItems;
-*/
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shopItem")
     private List<Comment> comments;
 
@@ -69,6 +61,11 @@ public class ShopItem extends BaseEntity {
 
     private int rating = 5;
 
+    /*
+    @JsonManagedReference
+    @OneToMany(mappedBy = "shopItem")
+    private List<TransactionItem> transactionItems;
+*/
     public ShopItem addComment(Comment comment) {
         comment.setShopItem(this);
         this.comments.add(comment);

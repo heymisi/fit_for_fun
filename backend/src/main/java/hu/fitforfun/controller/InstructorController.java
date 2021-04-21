@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -53,6 +54,11 @@ public class InstructorController {
         instructorRepository.delete(inst.get());
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/availableFacility")
+    public List<Instructor> getInstructorsByAvailableFacility() {
+        return instructorService.listInstructorsByAvailableFacility();
     }
 /*
     @PutMapping("/{id}")

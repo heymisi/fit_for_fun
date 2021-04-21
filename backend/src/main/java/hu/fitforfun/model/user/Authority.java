@@ -2,6 +2,7 @@ package hu.fitforfun.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.model.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -18,13 +19,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "authorities")
-@JsonIdentityInfo(scope = Authority.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+
 public class Authority extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "authorities")
     private List<Role> roles;
 

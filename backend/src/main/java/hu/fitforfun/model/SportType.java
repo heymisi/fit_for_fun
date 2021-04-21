@@ -1,9 +1,6 @@
 package hu.fitforfun.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.shop.ShopItem;
@@ -12,11 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "sports_table")
@@ -24,9 +22,6 @@ public class SportType extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
-    @JsonIgnore
-    @OneToMany(mappedBy = "sportType")
-    private List<Exercise> exercises;
     @JsonIgnore
     @ManyToMany(mappedBy = "availableSports")
     private List<SportFacility> sportFacilities;
@@ -37,9 +32,9 @@ public class SportType extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Set<ShopItem> items;
 
-    public SportType addExercises(Exercise exercise) {
-        exercise.setSportType(this);
-        this.exercises.add(exercise);
-        return this;
+    public SportType(){
+        sportFacilities = new ArrayList<>();
+        instructors = new ArrayList<>();
+        items = new HashSet<>();
     }
 }

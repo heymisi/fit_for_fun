@@ -28,4 +28,9 @@ public class SportTypeController {
     public SportType getSportTypeById(@PathVariable Long id){
         return sportTypeRepository.findById(id).get();
     }
+
+    @GetMapping("/byName/{name}")
+    public SportType getSportTypeByName(@PathVariable String name){
+        return sportTypeRepository.findByName(name).get();
+    }
 }

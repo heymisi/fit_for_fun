@@ -3,6 +3,7 @@ package hu.fitforfun.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import hu.fitforfun.model.instructor.Instructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="image")
-@JsonIdentityInfo(scope= Image.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+
 public class Image extends BaseEntity{
     @Column(name = "name")
     private String name;

@@ -59,10 +59,22 @@ public class InitialUserSetup {
         Role roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
 
         if (roleAdmin == null) return;
+        ContactData contactData = new ContactData();
+        contactData.setEmail("asd@asd.com");
+        contactData.setTelNumber("702175709");
+
+        Address address = new Address();
+        address.setCountry("Magyarország");
+        address.setZipCode(2730);
+        address.setCity(cityRepository.findByCityNameIgnoreCase("albertirsa"));
+        address.setStreet("Tó utca 26");
+
         User adminUser = new User();
+        adminUser.setContactData(contactData);
+        adminUser.setShippingAddress(address);
         adminUser.setFirstName("admin");
         adminUser.setLastName("admin");
-        adminUser.setEmail("asd@asd.com");
+        adminUser.getContactData().setEmail("asd@asd.com");
         adminUser.setEmailVerificationStatus(true);
         adminUser.setPassword(bCryptPasswordEncoder.encode("pass"));
         adminUser.setRoles(Arrays.asList(roleAdmin));
@@ -99,17 +111,17 @@ public class InitialUserSetup {
 
         TrainingSession session = new TrainingSession();
         session.setClient(client);
-        session.setDay(WeekDays.PÉNTEK);
+        session.setDay(WeekDays.Péntek);
         session.setSessionStart(15d);
         session.setSessionEnd(16d);
         TrainingSession session2 = new TrainingSession();
         session2.setClient(client);
-        session2.setDay(WeekDays.PÉNTEK);
+        session2.setDay(WeekDays.Péntek);
         session2.setSessionStart(16d);
         session2.setSessionEnd(17d);
         TrainingSession session3 = new TrainingSession();
         session3.setClient(client);
-        session3.setDay(WeekDays.PÉNTEK);
+        session3.setDay(WeekDays.Péntek);
         session3.setSessionStart(16d);
         session3.setSessionEnd(17d);
 
@@ -137,7 +149,7 @@ public class InitialUserSetup {
         trainingSessionDetails2.setOccasionPrice(3000);
 
         User user = new User();
-        user.setEmail("misi@gmail.com");
+        user.getContactData().setEmail("misi@gmail.com");
         user.setFirstName("instructor");
         user.setLastName("instructor");
         user.setPassword("pass");

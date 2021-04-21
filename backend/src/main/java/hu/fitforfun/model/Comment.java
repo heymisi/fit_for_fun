@@ -1,5 +1,6 @@
 package hu.fitforfun.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -9,6 +10,7 @@ import hu.fitforfun.model.shop.ShopItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -18,9 +20,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 @Table(name = "comment_table")
-@JsonIdentityInfo(scope= Comment.class,generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Comment extends BaseEntity {
 
     @Column(name = "commenter")
@@ -43,11 +45,6 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "shop_item_id")

@@ -15,6 +15,10 @@ import { NgModule } from '@angular/core';
 import { AboutUsComponent } from './component/about-us/about-us.component';
 import { ContactUsComponent } from './component/contact-us/contact-us.component';
 import { AdminProductsComponent } from './component/admin/admin-products/admin-products.component';
+import { AdminUsersComponent } from './component/admin/admin-users/admin-users.component';
+import { AdminInstructorsComponent } from './component/admin/admin-instructors/admin-instructors.component';
+import { AdminFacilitesComponent } from './component/admin/admin-facilites/admin-facilites.component';
+import { AdminTransactionsComponent } from './component/admin/admin-transactions/admin-transactions.component';
 
 const routes: Routes = [
   { path: "checkout", component: CheckoutComponent },
@@ -33,8 +37,12 @@ const routes: Routes = [
   { path: "password-reset", component: PasswordResetComponent },
   { path: "home", component: AboutUsComponent },
   { path: "admin/products", component: AdminProductsComponent },
+  { path: "admin/users", component: AdminUsersComponent },
+  { path: "admin/instructors", component: AdminInstructorsComponent },
+  { path: "admin/facilites", component: AdminFacilitesComponent },
+  { path: "admin/transactions", component: AdminTransactionsComponent },
   { path: "contact-us", component: ContactUsComponent },
-  { path: "", redirectTo: '/admin/products', pathMatch: 'full' },
+  { path: "", redirectTo: '/admin/users', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent, pathMatch: 'full' },
 
 ]

@@ -14,7 +14,7 @@ export class Product {
     imageUrl?: string;
     category?: ProductCategory;
     rating?: number;
-    file?: File;
+    image?: File;
     sportType?: Sport;
 
 }
