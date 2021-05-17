@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ShopItemRepository extends PagingAndSortingRepository<ShopItem,Long>, JpaSpecificationExecutor<ShopItem> {
+public interface ShopItemRepository extends PagingAndSortingRepository<ShopItem, Long>, JpaSpecificationExecutor<ShopItem> {
     Optional<ShopItem> findByName(String name);
 
     Page<ShopItem> findByCategoryId(Long id, Pageable pageable);

@@ -1,14 +1,23 @@
 package hu.fitforfun.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Data
 @Entity
-public class ContactData extends BaseEntity{
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "contact_data")
+public class ContactData extends BaseEntity {
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "tel_number")
     private String telNumber;
 }

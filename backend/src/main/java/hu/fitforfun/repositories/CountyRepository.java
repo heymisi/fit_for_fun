@@ -6,5 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CountyRepository extends JpaRepository<County,Long> {
+public interface CountyRepository extends JpaRepository<County, Long> {
+    County findByCountyName(String countyName);
 }

@@ -2,14 +2,24 @@ package hu.fitforfun.controller;
 
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
+import hu.fitforfun.model.Image;
 import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.request.CommentRequestModel;
+import hu.fitforfun.services.ImageService;
 import hu.fitforfun.services.SportFacilityService;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/facilities")
@@ -17,19 +27,15 @@ public class SportFacilityController {
 
     @Autowired
     private SportFacilityService sportFacilityService;
-
-
-    @GetMapping("")
-    public Page<SportFacility> getSportFacilities(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
-        return sportFacilityService.listSportFacilities(page, limit);
-    }
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/{id}")
     public Response getSportFacilityById(@PathVariable Long id) {
         try {
             return Response.createOKResponse(sportFacilityService.getSportFacilityById(id));
-        } catch (FitforfunException e) {
-            return Response.createErrorResponse(e.getErrorCode());
+        } catch (FitforfunException | IOException e) {
+            return Response.createErrorResponse("error to get Facility");
         }
     }
 
@@ -50,7 +56,7 @@ public class SportFacilityController {
             return Response.createErrorResponse(e.getErrorCode());
         }
     }
-    //@PreAuthorize("hasAuthority('DELETE_AUTHORITY') or #id == principal.userId")
+
     @DeleteMapping("/{id}")
     public Response deleteSportFacility(@PathVariable Long id) {
         try {
@@ -61,12 +67,23 @@ public class SportFacilityController {
         }
     }
 
+    @GetMapping(value = "")
+    public Iterable<SportFacility> getFacilitiesFiltered(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @Join(path= "availableSports", alias = "o") // alias specified for joined path
+            @And({@Spec(path = "name", params="name",spec = LikeIgnoreCase.class),
+                    @Spec(path = "address.city.cityName", params = "address",spec = EqualIgnoreCase.class),
+                    @Spec(path="o.name", params="sport", spec=EqualIgnoreCase.class)})
+                    Specification<SportFacility> spec) {
+        return sportFacilityService.listSportFacilities(page, limit, spec);
+    }
+
     @GetMapping("/search/{keyword}")
     public Page<SportFacility> searchFacilityByNameContaining
             (@PathVariable String keyword,
              @RequestParam(value = "page", defaultValue = "0") int page,
              @RequestParam(value = "limit", defaultValue = "5") int limit) {
-        System.err.println(keyword);
         return sportFacilityService.findByNameContaining(keyword, PageRequest.of(page, limit));
     }
 
@@ -84,10 +101,10 @@ public class SportFacilityController {
         return sportFacilityService.listFacilitiesBySportId(id, page, limit);
     }
 
-    @PostMapping("/{id}/uploadImage")
-    public Response uploadImage(@PathVariable Long id,@RequestParam("imageFile") MultipartFile file)   {
+    @PostMapping("/{id}/uploadImage/{type}")
+    public Response uploadImage(@PathVariable Long id, @PathVariable String type, @RequestParam("imageFile") MultipartFile file)   {
         try{
-            sportFacilityService.addImage(id,file);
+            sportFacilityService.addImage(id,file,type);
             return Response.createOKResponse("Success Image upload");
         }catch (Exception e){
             return Response.createErrorResponse("Error during image upload");
@@ -103,15 +120,24 @@ public class SportFacilityController {
         }
     }
 
-   /* @PostMapping("/{id}/rate")
-    public Response rateSportFacility(@PathVariable Long id, @RequestParam(value = "value") Double value) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            return Response.createOKResponse(sportFacilityService.rateSportFacility((User)auth.getDetails(),id, value));
-        } catch (FitforfunException e) {
+    @PostMapping("/{id}/addComment")
+    public Response addComment(@PathVariable Long id, @RequestBody CommentRequestModel massage) {
+        try{
+            return Response.createOKResponse(sportFacilityService.addComment(id, massage));
+        }catch (FitforfunException e){
             return Response.createErrorResponse(e.getErrorCode());
         }
-    }*/
+    }
+
+    @GetMapping(path = { "/getImage/{imageName}" })
+    public Image getImage(@PathVariable("imageName") String imageName) {
+        try{
+            return imageService.getImage(imageName);
+        }catch (IOException e){
+            return null;
+        }
+    }
+
 }
 
 

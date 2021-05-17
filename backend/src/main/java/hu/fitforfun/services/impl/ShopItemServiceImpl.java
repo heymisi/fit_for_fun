@@ -4,12 +4,13 @@ import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.Image;
-import hu.fitforfun.model.request.MessageRequestModel;
-import hu.fitforfun.model.request.ShopItemRequestModel;
+import hu.fitforfun.model.Rating;
+import hu.fitforfun.model.request.CommentRequestModel;
 import hu.fitforfun.model.shop.ShopItem;
-import hu.fitforfun.repositories.CommentRepository;
-import hu.fitforfun.repositories.ItemCategoryRepository;
-import hu.fitforfun.repositories.ShopItemRepository;
+import hu.fitforfun.model.shop.TransactionItem;
+import hu.fitforfun.model.user.User;
+import hu.fitforfun.repositories.*;
+import hu.fitforfun.services.ImageService;
 import hu.fitforfun.services.ShopItemService;
 import hu.fitforfun.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,23 +32,37 @@ public class ShopItemServiceImpl implements ShopItemService {
     @Autowired
     ShopItemRepository shopItemRepository;
 
+
+    @Autowired
+    TransactionItemRepository transactionItemRepository;
+
     @Autowired
     ItemCategoryRepository itemCategoryRepository;
 
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    ImageService imageService;
+
     @Override
-    public ShopItem getShopItemById(Long id) throws FitforfunException {
+    public ShopItem getShopItemById(Long id) throws FitforfunException, IOException {
         Optional<ShopItem> optionalShopItem = shopItemRepository.findById(id);
         if (!optionalShopItem.isPresent()) {
             throw new FitforfunException(ErrorCode.SHOP_ITEM_NOT_EXISTS);
+        }
+        if(optionalShopItem.get().getImage() != null) {
+            Image image = imageService.getImage(optionalShopItem.get().getImage().getName());
+            optionalShopItem.get().setImageString("data:" + image.getType() + ";base64," + Base64.getEncoder().encodeToString(image.getPicByte()));
         }
         return optionalShopItem.get();
     }
 
     @Override
-    public Iterable<ShopItem> listShopItems(int page, int limit, String filter, Specification<ShopItem> spec) {
+    public Page<ShopItem> listShopItems(int page, int limit, String filter, Specification<ShopItem> spec) {
         Pageable pageableRequest = PageRequest.of(page, limit);
 
         if (filter.equals("priceBackward"))
@@ -57,26 +72,20 @@ public class ShopItemServiceImpl implements ShopItemService {
             pageableRequest = PageRequest.of(page, limit, Sort.by("price").ascending());
 
         else if (filter.equals("byRate"))
-            pageableRequest = PageRequest.of(page, limit, Sort.by("rating").descending());
+            pageableRequest = PageRequest.of(page, limit, Sort.by("rating.value").descending());
 
         else if (filter.equals("newest"))
             pageableRequest = PageRequest.of(page, limit, Sort.by("dateCreated").descending());
 
+        return shopItemRepository.findAll(spec, pageableRequest).
+                map(item -> setImage(item));
 
-        return shopItemRepository.findAll(spec, pageableRequest);
     }
 
     public List<ShopItem> listShopItemsWithoutFilter() {
         List<ShopItem> returnValue = new ArrayList<>();
         shopItemRepository.findAll().forEach(returnValue::add);
-        return returnValue;
-    }
-
-    @Override
-    public Page<ShopItem> listShopItemsByCategoryId(Long categoryId, int page, int limit) {
-        System.err.println(page + limit);
-        Pageable pageableRequest = PageRequest.of(page, limit);
-        return shopItemRepository.findByCategoryId(categoryId, pageableRequest);
+        return returnValue.stream().map(item -> setImage(item)).collect(Collectors.toList());
     }
 
     @Override
@@ -85,7 +94,7 @@ public class ShopItemServiceImpl implements ShopItemService {
         if (optionalShopItem.isPresent()) {
             throw new FitforfunException(ErrorCode.SHOP_ITEM_ALREADY_EXISTS);
         }
-
+        shopItem.setRating(new Rating());
         shopItem.setComments(new ArrayList());
         return shopItemRepository.save(shopItem);
     }
@@ -95,6 +104,9 @@ public class ShopItemServiceImpl implements ShopItemService {
         Optional<ShopItem> optionalShopItem = shopItemRepository.findById(id);
         if (!optionalShopItem.isPresent()) {
             throw new FitforfunException(ErrorCode.SHOP_ITEM_ALREADY_EXISTS);
+        }
+        if (transactionItemRepository.findByShopItem(optionalShopItem.get()).isPresent()) {
+            throw new FitforfunException(ErrorCode.PRODUCT_ALREADY_IN_USE);
         }
         shopItemRepository.delete(optionalShopItem.get());
     }
@@ -106,7 +118,6 @@ public class ShopItemServiceImpl implements ShopItemService {
             throw new FitforfunException(ErrorCode.SHOP_ITEM_ALREADY_EXISTS);
         }
         ShopItem updatedShopItem = optionalShopItem.get();
-        System.err.println(shopItem.toString());
         if (shopItem.getName() != null) {
             updatedShopItem.setName(shopItem.getName());
         }
@@ -122,10 +133,10 @@ public class ShopItemServiceImpl implements ShopItemService {
         if (shopItem.getUnitsInStock() != null) {
             updatedShopItem.setUnitsInStock(shopItem.getUnitsInStock());
         }
-        if(shopItem.getSportType() != null){
+        if (shopItem.getSportType() != null) {
             updatedShopItem.setSportType(shopItem.getSportType());
         }
-        if(shopItem.getImage() != null){
+        if (shopItem.getImage() != null) {
             updatedShopItem.setImage(shopItem.getImage());
         }
         return shopItemRepository.save(updatedShopItem);
@@ -142,19 +153,33 @@ public class ShopItemServiceImpl implements ShopItemService {
     }
 
     @Override
-    public Comment addComment(Long id, MessageRequestModel massage) {
-        Optional<ShopItem> optionalShopItem = shopItemRepository.findById(id);
+    public Comment addComment(Long shopItemId, CommentRequestModel comment) throws FitforfunException {
+        Optional<ShopItem> optionalShopItem = shopItemRepository.findById(shopItemId);
         if (!optionalShopItem.isPresent()) {
-            return null;
+            throw new FitforfunException(ErrorCode.SHOP_ITEM_NOT_EXISTS);
+        }
+        Optional<User> optionalUser = userRepository.findById((long) comment.getUserId());
+        if (!optionalUser.isPresent()) {
+            throw new FitforfunException(ErrorCode.USER_NOT_EXISTS);
         }
         ShopItem shopItem = optionalShopItem.get();
-        Comment comment = new Comment();
-        comment.setText(massage.getMessage());
-        comment.setCommenterName("TODO");
-        commentRepository.save(comment);
-        shopItem.addComment(comment);
+        List<Comment> optionalComment = commentRepository.findByCommenterAndShopItem(optionalUser.get(), shopItem);
+        if (optionalComment.size() != 0) {
+            throw new FitforfunException(ErrorCode.ALREADY_COMMENTED);
+        }
+
+        shopItem.getRating().setValue((shopItem.getRating().getValue() * shopItem.getRating().getCounter()
+                + comment.getRate()) / (shopItem.getRating().getCounter() + 1));
+
+        shopItem.getRating().setCounter(shopItem.getRating().getCounter() + 1);
+        Comment commentToAdd = new Comment();
+        commentToAdd.setText(comment.getMessage());
+        commentToAdd.setRate(comment.getRate());
+        commentToAdd.setCommenter(optionalUser.get());
+        commentRepository.save(commentToAdd);
+        shopItem.addComment(commentToAdd);
         shopItemRepository.save(shopItem);
-        return comment;
+        return commentToAdd;
     }
 
     @Override
@@ -167,6 +192,18 @@ public class ShopItemServiceImpl implements ShopItemService {
         shopitem.setImage(new Image(multipartFile.getOriginalFilename(), multipartFile.getContentType(),
                 ImageUtils.compressBytes(multipartFile.getBytes())));
         shopItemRepository.save(shopitem);
+    }
+
+    private ShopItem setImage(ShopItem item) {
+        if (item.getImage() != null) {
+            try {
+                Image image = imageService.getImage(item.getImage().getName());
+                item.setImageString("data:" + image.getType() + ";base64,"+Base64.getEncoder().encodeToString(image.getPicByte()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return item;
     }
 
 }

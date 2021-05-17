@@ -1,7 +1,6 @@
 package hu.fitforfun.controller;
 
 import hu.fitforfun.model.shop.ItemCategory;
-import hu.fitforfun.model.shop.ShopItem;
 import hu.fitforfun.repositories.ItemCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +23,12 @@ public class ItemCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ItemCategory getCategoryById(@PathVariable Long id){
+    public ItemCategory getCategoryById(@PathVariable Long id) {
         return itemCategoryRepository.findById(id).get();
     }
+
     @GetMapping("/byName/{name}")
-    public ItemCategory getCategoryByName(@PathVariable String name){
+    public ItemCategory getCategoryByName(@PathVariable String name) {
         return itemCategoryRepository.findByCategoryName(name).get();
     }
 }

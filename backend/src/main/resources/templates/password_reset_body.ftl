@@ -15,7 +15,7 @@
                             </tr>
                             <tr>
                                 <td style="font-size:14px;font-family:Arial,Helvetica,sans-serif;color:#333;">
-                                    <strong style="color: #c7b07c;">Kedves !</strong>
+                                    <strong style="color: #c7b07c;">Kedves ${firstName} ${lastName}!</strong>
                                 </td>
                             </tr>
                             <tr>
@@ -23,11 +23,17 @@
                             </tr>
                             <tr>
                                 <td style="font-size:14px;font-family:Arial,Helvetica,sans-serif;color:#333;">
-                                     Rendszerünkbe jelszó visszaállítási kérelem érkezett az ön email címére. Ezt a <a style="color: #c7b07c;" href="https://myapesyto.com/" target="_blank">https://myapesyto.com/</a>-re kattintva teheti meg.
+                                     Rendszerünkbe jelszó visszaállítási kérelem érkezett az ön email címére. Ezt a <a style="color: #c7b07c;" href="http://localhost:4200/password-reset?token=${token}" target="_blank">https://localhost:4200/</a>-re kattintva teheti meg.
                                 </td>
                             </tr>
-
-
+                            <tr>
+                                <td height="15" style="font-size:1px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size:14px;font-family:Arial,Helvetica,sans-serif;color:#333;">
+                                    Kérjük figyeljen arra, hogy az új jelszó beállítására egy óráig van lehetősége a kiküldéstől számítva!
+                                </td>
+                            </tr>
                             <tr>
                                 <td height="15" style="font-size:1px">&nbsp;</td>
                             </tr>

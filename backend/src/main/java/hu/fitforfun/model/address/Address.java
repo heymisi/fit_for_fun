@@ -12,7 +12,8 @@ import javax.persistence.Table;
 
 @Entity
 @Data
-@Table(name="address_table")
+@Table(name = "address")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Address.class)
 public class Address extends BaseEntity {
 
     @Column(name = "country")
@@ -23,9 +24,6 @@ public class Address extends BaseEntity {
 
     @OneToOne
     private City city;
-
-    @Column(name = "zip_code")
-    private Integer zipCode;
 
     @Column(name = "street")
     private String street;

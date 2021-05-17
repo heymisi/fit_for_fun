@@ -10,7 +10,7 @@ import javax.persistence.Column;
 import java.util.List;
 
 @Repository
-public interface CityRepository extends JpaRepository<City,Long> {
+public interface CityRepository extends JpaRepository<City, Long> {
 
     List<City> findByCounty(County county);
 

@@ -1,9 +1,7 @@
 package hu.fitforfun.model.shop;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import hu.fitforfun.enums.TransactionStatus;
 import hu.fitforfun.model.BaseEntity;
 import hu.fitforfun.model.user.User;
 import lombok.*;
@@ -17,10 +15,12 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@Entity(name = "transaction")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
+@Entity
+@Table(name = "transaction")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Transaction.class)
 public class Transaction extends BaseEntity {
+
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchaser_id")
     private User purchaser;
@@ -29,12 +29,18 @@ public class Transaction extends BaseEntity {
     private String trackingNumber;
 
     @Column(name = "transaction_created")
+    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date transactionCreated;
 
     @Column(name = "sum_total")
     private Double sumTotal;
 
+    @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
+    private TransactionStatus status;
+
+    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(
             mappedBy = "transaction",
             cascade = CascadeType.ALL,

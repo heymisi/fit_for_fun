@@ -1,9 +1,5 @@
 package hu.fitforfun.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import hu.fitforfun.model.instructor.Instructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,9 +13,9 @@ import javax.persistence.Table;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="image")
+@Table(name = "images")
+public class Image extends BaseEntity {
 
-public class Image extends BaseEntity{
     @Column(name = "name")
     private String name;
 

@@ -9,5 +9,5 @@ public interface ImageService {
 
     void uploadImage(MultipartFile file) throws IOException;
 
-    Image getImage(String imageName) throws IOException ;
+    Image getImage(String imageName) throws IOException;
 }

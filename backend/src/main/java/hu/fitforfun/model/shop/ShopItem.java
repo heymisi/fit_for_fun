@@ -2,7 +2,6 @@ package hu.fitforfun.model.shop;
 
 import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.*;
-import hu.fitforfun.model.user.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,20 +10,21 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Entity(name = "shop_item")
+@Entity
+@Table(name = "shop_item")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = ShopItem.class)
 public class ShopItem extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = true)
+    @Column(name = "price", nullable = true)
     private BigDecimal price;
 
     @Column(name = "date_created")
@@ -37,13 +37,13 @@ public class ShopItem extends BaseEntity {
     @UpdateTimestamp
     private Date lastUpdated;
 
+    @Column(name = "units_in_stock", nullable = true)
     private Integer unitsInStock;
 
     @Lob
+    @Column(name = "description", nullable = true)
     private String description;
 
-    @Column(name = "image_url")
-    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -59,13 +59,17 @@ public class ShopItem extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private Image image;
 
-    private int rating = 5;
+    @Lob
+    @Column(name = "image_string")
+    private String imageString;
 
-    /*
-    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL)
+    private Rating rating;
+
+    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "shopItem")
     private List<TransactionItem> transactionItems;
-*/
+
     public ShopItem addComment(Comment comment) {
         comment.setShopItem(this);
         this.comments.add(comment);

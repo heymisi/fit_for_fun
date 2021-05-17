@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface SportTypeService {
     SportType addSportType(SportType sportType) throws FitforfunException;
+
     List<SportType> listSports();
 }

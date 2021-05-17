@@ -1,7 +1,6 @@
 package hu.fitforfun.controller;
 
 import hu.fitforfun.model.SportType;
-import hu.fitforfun.model.shop.ItemCategory;
 import hu.fitforfun.repositories.SportTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,18 +18,19 @@ public class SportTypeController {
     SportTypeRepository sportTypeRepository;
 
     @GetMapping("")
-    public List<SportType> getSports(){
+    public List<SportType> getSports() {
         List<SportType> returnSports = new ArrayList<>();
         sportTypeRepository.findAll().iterator().forEachRemaining(returnSports::add);
         return returnSports;
     }
+
     @GetMapping("/{id}")
-    public SportType getSportTypeById(@PathVariable Long id){
+    public SportType getSportTypeById(@PathVariable Long id) {
         return sportTypeRepository.findById(id).get();
     }
 
     @GetMapping("/byName/{name}")
-    public SportType getSportTypeByName(@PathVariable String name){
+    public SportType getSportTypeByName(@PathVariable String name) {
         return sportTypeRepository.findByName(name).get();
     }
 }

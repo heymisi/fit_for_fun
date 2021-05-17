@@ -4,14 +4,16 @@ import hu.fitforfun.enums.Roles;
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.address.Address;
+import hu.fitforfun.model.request.UserRegistrationModel;
+import hu.fitforfun.model.request.UserUpdateDuringTransactionRequestModel;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.model.request.PasswordResetModel;
 import hu.fitforfun.model.request.PasswordResetRequestModel;
 import hu.fitforfun.repositories.AddressRepository;
 import hu.fitforfun.repositories.UserRepository;
+import hu.fitforfun.services.TrainingSessionService;
 import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +31,9 @@ public class UserController {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private TrainingSessionService trainingSessionService;
+
     @GetMapping("")
     public List<User> getUsers(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "10") int limit) {
         return userService.listUsers(page, limit);
@@ -44,10 +49,11 @@ public class UserController {
     }
 
     @PostMapping({"", "/"})
-    public Response saveUser(@RequestBody User user) {
+    public Response saveUser(@RequestBody UserRegistrationModel user) {
         try {
             return Response.createOKResponse(userService.createUser(user, Roles.ROLE_USER.name()));
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.createErrorResponse("error during registration");
         }
     }
@@ -61,19 +67,26 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAuthority('DELETE_AUTHORITY') or #id == principal.userId")
-    @DeleteMapping("/{id}")
-    public Response deleteUser(@PathVariable Long id) {
+    @PutMapping("/{id}/updateDuringTransaction")
+    public Response updateUserDuringTransaction(@PathVariable Long id, @RequestBody UserUpdateDuringTransactionRequestModel user) {
         try {
-            return Response.createOKResponse(userService.deleteUser(id));
+            return Response.createOKResponse(userService.updateUserDuringTransaction(id, user));
         } catch (FitforfunException e) {
             return Response.createErrorResponse(e.getErrorCode());
         }
     }
 
+    @DeleteMapping("/{id}")
+    public boolean deleteUser(@PathVariable Long id, @RequestParam(value = "pass") String pass) {
+        try {
+            return userService.deleteUser(id, pass);
+        } catch (FitforfunException e) {
+            return false;
+        }
+    }
+
     @GetMapping("/email-verification")
     public Response verifyEmailToken(@RequestParam(value = "token") String token) {
-
         if (userService.verifyEmailToken(token)) {
             return Response.createOKResponse("Successful email verification");
         } else {
@@ -83,12 +96,13 @@ public class UserController {
 
     @PostMapping("/password-reset-request")
     public Response requestPasswordReset(@RequestBody PasswordResetRequestModel passwordResetRequestModel) {
-        boolean operationResult = userService.requestPasswordReset(passwordResetRequestModel.getEmail());
-        if (operationResult) {
-            return Response.createOKResponse("Request password reset");
-        } else {
-            return Response.createErrorResponse("Error during request password reset");
+        try {
+            userService.requestPasswordReset(passwordResetRequestModel.getEmail());
+            return Response.createOKResponse("Successful password reset request");
+        } catch (Exception e) {
+            return Response.createErrorResponse("Error during password reset request");
         }
+
     }
 
     @PostMapping("/password-reset")
@@ -103,17 +117,34 @@ public class UserController {
 
     @GetMapping("/email-check/{email}")
     public Boolean isEmailAlreadyUsed(@PathVariable String email) {
-        System.err.println(email);
         if (userRepository.findByContactDataEmail(email).isPresent()) {
-            System.err.println("true");
             return true;
         } else {
-            System.err.println("false");
             return false;
         }
     }
+
     @GetMapping("/get-address")
-    public List<Address> getAddresses(){
+    public List<Address> getAddresses() {
         return this.addressRepository.findAll();
+    }
+
+    @GetMapping("/{id}/addTrainingSession")
+    public Response addTrainingSession(@PathVariable Long id, @RequestParam(value = "sessionId") Long sessionId) {
+        try {
+            trainingSessionService.addTrainingSessionToClient(id, sessionId);
+            return Response.createOKResponse("Successfully added this training session");
+        } catch (Exception e) {
+            return Response.createErrorResponse("Couldn't add this training session");
+        }
+    }
+
+    @GetMapping("/{id}/changePass")
+    public Boolean changePassword(@PathVariable Long id, @RequestParam(value = "oldPass") String oldPass, @RequestParam(value = "newPass") String newPass) {
+        try {
+            return userService.changePassword(id, oldPass, newPass);
+        } catch (FitforfunException e) {
+            return false;
+        }
     }
 }

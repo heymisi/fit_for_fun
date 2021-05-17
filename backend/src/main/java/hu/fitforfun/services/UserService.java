@@ -1,6 +1,8 @@
 package hu.fitforfun.services;
 
 import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.model.request.UserRegistrationModel;
+import hu.fitforfun.model.request.UserUpdateDuringTransactionRequestModel;
 import hu.fitforfun.model.user.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -10,17 +12,22 @@ public interface UserService extends UserDetailsService {
 
     User getUserById(Long id) throws FitforfunException;
 
-    User deleteUser(Long id) throws FitforfunException;
+    boolean deleteUser(Long id, String password) throws FitforfunException;
 
     List<User> listUsers(int page, int limit);
 
-    User createUser(User user, String role) throws Exception;
+    User createUser(UserRegistrationModel user, String role) throws Exception;
 
     User updateUser(Long id, User user) throws FitforfunException;
 
+    User updateUserDuringTransaction(Long id, UserUpdateDuringTransactionRequestModel user) throws FitforfunException;
+
     boolean verifyEmailToken(String token);
 
-    boolean requestPasswordReset(String email);
+    void requestPasswordReset(String email) throws Exception;
 
     boolean resetPassword(String token, String password);
+
+    boolean changePassword(Long userId, String oldPassword, String newPassword) throws FitforfunException;
+
 }

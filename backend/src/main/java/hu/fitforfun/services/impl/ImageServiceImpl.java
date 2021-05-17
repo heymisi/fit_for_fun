@@ -23,6 +23,7 @@ public class ImageServiceImpl implements ImageService {
                 ImageUtils.compressBytes(file.getBytes()));
         imageRepository.save(img);
     }
+
     @Override
     public Image getImage(String imageName) throws IOException {
         final Optional<Image> retrievedImage = imageRepository.findByName(imageName);

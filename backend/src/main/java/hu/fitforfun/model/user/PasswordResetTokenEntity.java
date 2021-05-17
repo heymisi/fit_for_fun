@@ -6,9 +6,11 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Data
-@Entity(name = "password_reset_token")
+@Entity
+@Table(name = "password_reset_token")
 public class PasswordResetTokenEntity extends BaseEntity {
 
     private String token;

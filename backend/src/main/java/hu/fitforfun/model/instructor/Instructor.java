@@ -1,14 +1,8 @@
 package hu.fitforfun.model.instructor;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import hu.fitforfun.model.BaseEntity;
-import hu.fitforfun.model.Comment;
-import hu.fitforfun.model.SportType;
-import hu.fitforfun.model.facility.OpeningHours;
+import com.fasterxml.jackson.annotation.*;
+import hu.fitforfun.model.*;
 import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.user.User;
 import lombok.AllArgsConstructor;
@@ -22,16 +16,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "instructors")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Instructor.class)
 public class Instructor extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
-  /*  @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
-    private List<InstructorRating> ratings;
-*/
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "bio")
     private String bio;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
@@ -43,30 +38,24 @@ public class Instructor extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "sports_id", referencedColumnName = "id"))
     private List<SportType> knownSports;
 
-    @OneToMany(mappedBy = "instructor")
+    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<TrainingSession> trainingSessions;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<TrainingSessionDetails> trainingSessionDetails;
-
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     @JoinColumn(name = "sport_facility_id")
     private SportFacility sportFacility;
 
-    private int rating = 5;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Rating rating;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Image image;
 
-  /*  @Override
-    public List<InstructorRating> getRatings() {
-        return ratings;
-    }
-
-    @Override
-    public Instructor addRating(InstructorRating instructorRating) {
-        instructorRating.setInstructor(this);
-        this.ratings.add(instructorRating);
-        return this;
-    }*/
+    @Lob
+    @Column(name = "imageString")
+    private String imageString;
 
     public Instructor addComment(Comment comment) {
         comment.setInstructor(this);
@@ -74,12 +63,13 @@ public class Instructor extends BaseEntity {
         return this;
     }
 
-    public Instructor addSport(SportType sportType){
+    public Instructor addSport(SportType sportType) {
         sportType.getInstructors().add(this);
         this.knownSports.add(sportType);
         return this;
     }
-    public Instructor addTrainingSession(TrainingSession session){
+
+    public Instructor addTrainingSession(TrainingSession session) {
         session.setInstructor(this);
         this.trainingSessions.add(session);
         return this;

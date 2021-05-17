@@ -1,6 +1,10 @@
 import { CartItem } from "./cart-item";
+import { CommentEntity } from "./comment-entity";
+import { Image } from "./image";
 import { ProductCategory } from "./product-category";
+import { Rating } from "./rating";
 import { Sport } from "./sport";
+import { Transaction } from "./transaction";
 import { TransactionItem } from "./transaction-item";
 
 export class Product {
@@ -11,10 +15,11 @@ export class Product {
     lastUpdated?: Date;
     unitsInStock?: number;
     description?: string;
-    imageUrl?: string;
     category?: ProductCategory;
-    rating?: number;
-    image?: File;
+    rating?: Rating;
+    image?: Image;
     sportType?: Sport;
-
+    transactionItems?: TransactionItem[];
+    comments?: CommentEntity[];
+    imageString?: String;
 }

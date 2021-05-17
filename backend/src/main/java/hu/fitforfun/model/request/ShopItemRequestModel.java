@@ -13,8 +13,5 @@ public class ShopItemRequestModel {
     private BigDecimal price;
     private Integer unitsInStock;
     private String description;
-  //  private ItemCategory category;
-  //  private SportType sportType;
     private MultipartFile file;
-  //  private Integer Rating;
 }

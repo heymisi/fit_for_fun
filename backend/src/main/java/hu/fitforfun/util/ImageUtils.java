@@ -25,6 +25,7 @@ public class ImageUtils {
 
         return outputStream.toByteArray();
     }
+
     public static byte[] decompressBytes(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);

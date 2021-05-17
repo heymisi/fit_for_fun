@@ -2,6 +2,7 @@ package hu.fitforfun.services;
 
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.shop.Transaction;
+import hu.fitforfun.model.shop.TransactionItem;
 import hu.fitforfun.model.user.User;
 
 import java.util.List;
@@ -9,13 +10,16 @@ import java.util.List;
 public interface TransactionService {
     Transaction getTransactionById(Long id) throws FitforfunException;
 
-    List<Transaction> listTransactions(int page, int limit);
+    List<Transaction> listTransactions();
 
     List<Transaction> listTransactionsByUser(User user);
 
-    Transaction createTransaction(Transaction transaction) throws FitforfunException;
+    Transaction createTransaction(Long userId) throws Exception;
 
     void deleteTransaction(Long id) throws FitforfunException;
 
-    Transaction updateTransaction(Long id,Transaction transaction) throws FitforfunException;
+    List<TransactionItem> listTransactionItems();
+
+    List<Transaction> listTransactionsByUser(Long id);
+
 }

@@ -23,19 +23,19 @@ public class AddressController {
     CountyRepository countyController;
 
     @GetMapping("/cities")
-    public List<City> getAllCities(){
+    public List<City> getAllCities() {
         return cityController.findAll();
     }
 
 
-    @GetMapping("/cities/{countyId}")
-    public List<City> getAllCitiesByCounty(@PathVariable Long countyId){
+    @GetMapping("/cities/{county}")
+    public List<City> getAllCitiesByCounty(@PathVariable String county) {
 
-        return cityController.findByCounty(countyController.findById(countyId).get());
+        return cityController.findByCounty(countyController.findByCountyName(county));
     }
 
     @GetMapping("/counties")
-    public List<County> getAllCounties(){
+    public List<County> getAllCounties() {
         return countyController.findAll();
     }
 }

@@ -4,8 +4,7 @@ import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.Image;
-import hu.fitforfun.model.request.MessageRequestModel;
-import hu.fitforfun.model.request.ShopItemRequestModel;
+import hu.fitforfun.model.request.CommentRequestModel;
 import hu.fitforfun.model.shop.ShopItem;
 import hu.fitforfun.repositories.ShopItemRepository;
 import hu.fitforfun.services.ImageService;
@@ -39,26 +38,22 @@ public class ShopItemController {
     private ImageService imageService;
 
     @GetMapping(value = "")
-    public Iterable<ShopItem> getShopItems(@RequestParam(value = "page", defaultValue = "0") int page,
-                                           @RequestParam(value = "limit", defaultValue = "10") int limit,
-                                           @RequestParam(value = "filter", defaultValue = "null") String filter,
-                                           @And({@Spec(path = "sportType.name",params="sport", spec = Like.class),
-                                                 @Spec(path = "category.categoryName", params = "category",spec = Like.class),
-                                                 @Spec(path = "price",params = {"priceMin","priceMax"}, spec = Between.class)}) Specification<ShopItem> spec) {
+    public Page<ShopItem> getShopItems(@RequestParam(value = "page", defaultValue = "0") int page,
+                                       @RequestParam(value = "limit", defaultValue = "10") int limit,
+                                       @RequestParam(value = "filter", defaultValue = "null") String filter,
+                                       @And({@Spec(path = "sportType.name", params = "sport", spec = Like.class),
+                                               @Spec(path = "category.categoryName", params = "category", spec = Like.class),
+                                               @Spec(path = "price", params = {"priceMin", "priceMax"}, spec = Between.class)}) Specification<ShopItem> spec) {
 
 
         return shopItemService.listShopItems(page, limit, filter, spec);
     }
+
     @GetMapping(value = "/without-filters")
-    public List<ShopItem> getShopItemsWithoutFilters(){
+    public List<ShopItem> getShopItemsWithoutFilters() {
         return shopItemService.listShopItemsWithoutFilter();
     }
 
-    @GetMapping("/category/{id}")
-    public Page<ShopItem> getShopItemsByCategoryId(@PathVariable Long id, @RequestParam(value = "page", defaultValue = "0") int page,
-                                                   @RequestParam(value = "limit", defaultValue = "5") int limit) {
-        return shopItemService.listShopItemsByCategoryId(id, page, limit);
-    }
 
     @GetMapping("/search/{keyword}")
     public Page<ShopItem> searchShopItemByNameContaining
@@ -72,15 +67,14 @@ public class ShopItemController {
     public Response getShopItemById(@PathVariable Long id) {
         try {
             return Response.createOKResponse(shopItemService.getShopItemById(id));
-        } catch (FitforfunException e) {
-            return Response.createErrorResponse(e.getErrorCode());
+        } catch (FitforfunException | IOException e) {
+            return Response.createErrorResponse("error get item");
         }
     }
 
     @PostMapping({"", "/"})
     public Response saveShopItem(@RequestBody ShopItem shopItem) {
         try {
-            System.err.println(shopItem);
             return Response.createOKResponse(shopItemService.createShopItem(shopItem));
         } catch (FitforfunException e) {
             return Response.createErrorResponse(e.getErrorCode());
@@ -96,7 +90,6 @@ public class ShopItemController {
         }
     }
 
-    //@PreAuthorize("hasAuthority('DELETE_AUTHORITY') or #id == principal.userId")
     @DeleteMapping("/{id}")
     public Response deleteShopItem(@PathVariable Long id) {
         try {
@@ -112,33 +105,33 @@ public class ShopItemController {
         return shopItemService.getComments(id);
     }
 
-    @PostMapping("/{id}/comments")
-    public Comment AddComment(@PathVariable Long id, @RequestBody MessageRequestModel massage) {
-        return shopItemService.addComment(id, massage);
+    @PostMapping("/{id}/addComment")
+    public Response addComment(@PathVariable Long id, @RequestBody CommentRequestModel massage) {
+        try {
+            return Response.createOKResponse(shopItemService.addComment(id, massage));
+        } catch (FitforfunException e) {
+            return Response.createErrorResponse(e.getErrorCode());
+        }
     }
 
     @PostMapping("/{id}/uploadImage")
-    public Response uploadImage(@PathVariable Long id,@RequestParam("imageFile")MultipartFile file)   {
-        try{
-            shopItemService.addImage(id,file);
+    public Response uploadImage(@PathVariable Long id, @RequestParam("imageFile") MultipartFile file) {
+        try {
+            shopItemService.addImage(id, file);
             return Response.createOKResponse("Success Image upload");
-        }catch (Exception e){
+        } catch (Exception e) {
             return Response.createErrorResponse("Error during image upload");
         }
     }
 
-    @GetMapping(path = { "/getImage/{imageName}" })
+    @GetMapping(path = {"/getImage/{imageName}"})
     public Image getImage(@PathVariable("imageName") String imageName) {
-        try{
+        try {
             return imageService.getImage(imageName);
-        }catch (IOException e){
+        } catch (IOException e) {
             return null;
         }
     }
-  /*  @GetMapping("/testtt")
-    public ShopItem testREturn(){
-        return shopItemService.li
-    }*/
 }
 
 

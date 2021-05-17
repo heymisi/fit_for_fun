@@ -3,6 +3,7 @@ package hu.fitforfun.model.address;
 import com.fasterxml.jackson.annotation.*;
 import hu.fitforfun.model.BaseEntity;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "counties_table")
+@ToString
+@Table(name = "counties")
 public class County extends BaseEntity {
     @Column(name = "county_name")
     private String countyName;
@@ -20,12 +22,4 @@ public class County extends BaseEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "county")
     List<City> cities;
-
-    @Override
-    public String toString() {
-        return "County{" +
-                "countyName='" + countyName + '\'' +
-                ", cities=" + cities +
-                '}';
-    }
 }

@@ -17,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.swing.tree.ExpandVetoException;
 import java.util.Arrays;
 
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -33,23 +32,6 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
     }
-
-
-/*
-    @Autowired
-    public void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser("user")
-                .password("{noop}pass")
-                .roles("USER")
-                .and()
-                .withUser("admin")
-                .password("{noop}pass")
-                .roles("ADMIN");
-    }
-*/
-
 
     @Override
     protected void configure(HttpSecurity httpSec) throws Exception {
@@ -72,7 +54,6 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .headers().frameOptions().disable();
-
     }
 
     @Override
@@ -81,8 +62,8 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
     }
 
     protected AuthenticationFilter getAuthenticationFilter() throws Exception {
-        final AuthenticationFilter filter = new AuthenticationFilter(authenticationManager());
-        filter.setFilterProcessesUrl("/users/login");
+        final AuthenticationFilter filter = new AuthenticationFilter(authenticationManager(), userRepository);
+        filter.setFilterProcessesUrl("/login");
         return filter;
     }
 

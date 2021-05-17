@@ -16,6 +16,7 @@
                             <tr>
                                 <td style="font-size:14px;font-family:Arial,Helvetica,sans-serif;color:#333;">
                                     <strong style="color: #c7b07c;">Kedves FitForFun Adminisztrátor!</strong>
+                                    <image src="images/contact-us.jpg" class="someClass "/>
                                 </td>
                             </tr>
                             <tr>

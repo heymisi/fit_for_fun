@@ -2,26 +2,42 @@ package hu.fitforfun.services;
 
 import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.model.Comment;
+import hu.fitforfun.model.facility.SportFacility;
 import hu.fitforfun.model.instructor.Instructor;
+import hu.fitforfun.model.request.CommentRequestModel;
+import hu.fitforfun.model.request.InstructorRegistrationModel;
+import hu.fitforfun.model.request.InstructorResponseModel;
 import hu.fitforfun.model.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface InstructorService {
-    Instructor getInstructorById(Long id) throws FitforfunException;
+    Instructor getInstructorById(Long id) throws FitforfunException, IOException;
+
+    Instructor getInstructorByUserId(Long userId) throws FitforfunException;
 
     Page<Instructor> listInstructors(int page, int limit);
 
-    Instructor createInstructor(Instructor instructor) throws Exception;
+    Iterable<Instructor> listInstructorsFiltered(int page, int limit, Specification<Instructor> spec);
 
-    void deleteInstructor(Long id) throws FitforfunException;
+    Instructor createInstructor(InstructorRegistrationModel instructor) throws Exception;
 
-    Instructor updateInstructor(Long id, User user) throws FitforfunException;
+    Boolean deleteInstructor(Long id, String password) throws FitforfunException;
 
-   // InstructorRating rateInstructor(User user, Long instructorId, Double value) throws FitforfunException;
+    Instructor updateInstructor(Long id, InstructorResponseModel instructor) throws FitforfunException;
 
     Instructor commentInstructor(User user, Long instructorId, Comment comment) throws FitforfunException;
 
     List<Instructor> listInstructorsByAvailableFacility();
+
+    void updateInstructorUser(Long id, User user) throws FitforfunException;
+
+    Comment addComment(Long id, CommentRequestModel massage) throws FitforfunException;
+
+    void addImage(Long id, MultipartFile multipartFile) throws Exception;
+
 }

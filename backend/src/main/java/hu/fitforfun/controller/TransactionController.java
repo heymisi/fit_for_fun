@@ -1,11 +1,10 @@
 package hu.fitforfun.controller;
 
-import hu.fitforfun.exception.FitforfunException;
 import hu.fitforfun.exception.Response;
 import hu.fitforfun.model.shop.Transaction;
+import hu.fitforfun.model.shop.TransactionItem;
 import hu.fitforfun.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,19 +16,27 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    @PostMapping(value = "/purchase", consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces =  MediaType.APPLICATION_JSON_VALUE)
-    public Response purchase(@RequestBody Transaction transaction) {
+    @GetMapping("/purchase/{userId}")
+    public Response purchase(@PathVariable Long userId) {
         try {
-            System.err.println("ma" + transaction);
-            return Response.createOKResponse(transactionService.createTransaction(transaction));
-        } catch (FitforfunException e) {
-            return Response.createErrorResponse(e);
+            return Response.createOKResponse(transactionService.createTransaction(userId));
+        } catch (Exception e) {
+            return Response.createErrorResponse("Error during purhcase");
         }
     }
 
     @GetMapping("")
     public List<Transaction> getAll() {
-        return transactionService.listTransactions(0, 10);
+        return transactionService.listTransactions();
+    }
+
+    @GetMapping("/transactionItems")
+    public List<TransactionItem> getTransactionItems() {
+        return transactionService.listTransactionItems();
+    }
+
+    @GetMapping("/{userId}")
+    public List<Transaction> getTransactionByUser(@PathVariable Long userId) {
+        return transactionService.listTransactionsByUser(userId);
     }
 }

@@ -10,19 +10,29 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "transaction_item")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Entity
+@Table(name = "transaction_item")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = TransactionItem.class)
 public class TransactionItem extends BaseEntity {
-    /*
-    @JsonBackReference
+
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne()
     @JoinColumn(name = "shop_item_id")
     private ShopItem shopItem;
-*/
+
+    @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "price")
     private Double price;
+
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne()
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
+
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

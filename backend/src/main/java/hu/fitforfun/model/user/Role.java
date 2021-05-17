@@ -7,14 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "roles")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "roles")
 @Data
-
 public class Role extends BaseEntity {
 
     @Column(nullable = false)
@@ -24,13 +23,13 @@ public class Role extends BaseEntity {
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 
-    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "roles_authorities",
             joinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authorities_id",referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
     private List<Authority> authorities;
 
-    public Role(String name){
+    public Role(String name) {
         this.name = name;
     }
 

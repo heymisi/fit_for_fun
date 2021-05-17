@@ -13,11 +13,31 @@ public class AppProperties {
     @Autowired
     private Environment env;
 
-    public String getEmailSender(){ return env.getProperty("email.sender");}
-    public String getEmailVerifyEmailSubject(){ return env.getProperty("email.verify-email.subject");}
-    public String getEmailVerifyEmailHtmlBody(){ return env.getProperty("email.verify-email.html-body");}
-    public String getEmailVerifyEmailTextBody(){ return env.getProperty("email.verify-email.text-body");}
-    public String getEmailPasswordResetHtmlBody(){ return env.getProperty("email.password.reset.html-body");}
-    public String getEmailPasswordResetTextBody(){ return env.getProperty("email.password.reset.text-body");}
-    public String getEmailPasswordResetSubject(){ return env.getProperty("email.password-reset.subject");}
+    public String getEmailSender() {
+        return env.getProperty("email.sender");
+    }
+
+    public String getEmailVerifyEmailSubject() {
+        return env.getProperty("email.verify-email.subject");
+    }
+
+    public String getEmailVerifyEmailHtmlBody() {
+        return env.getProperty("email.verify-email.html-body");
+    }
+
+    public String getEmailVerifyEmailTextBody() {
+        return env.getProperty("email.verify-email.text-body");
+    }
+
+    public String getEmailPasswordResetHtmlBody() {
+        return env.getProperty("email.password.reset.html-body");
+    }
+
+    public String getEmailPasswordResetTextBody() {
+        return env.getProperty("email.password.reset.text-body");
+    }
+
+    public String getEmailPasswordResetSubject() {
+        return env.getProperty("email.password-reset.subject");
+    }
 }

@@ -22,12 +22,15 @@ public class EmailConstants {
     public static String getEmailVerifyEmailTextBody() {
         return appProperties.getEmailVerifyEmailTextBody();
     }
+
     public static String getEmailPasswordResetHtmlBody() {
         return appProperties.getEmailPasswordResetHtmlBody();
     }
+
     public static String getEmailPasswordResetTextBody() {
         return appProperties.getEmailPasswordResetTextBody();
     }
+
     public static String getEmailPasswordResetSubject() {
         return appProperties.getEmailPasswordResetSubject();
     }

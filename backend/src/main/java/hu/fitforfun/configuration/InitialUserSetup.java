@@ -1,11 +1,17 @@
+/*
 package hu.fitforfun.configuration;
 
+import hu.fitforfun.enums.Roles;
+import hu.fitforfun.enums.TrainingSessionType;
 import hu.fitforfun.enums.WeekDays;
 import hu.fitforfun.exception.FitforfunException;
+import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.ContactData;
 import hu.fitforfun.model.instructor.TrainingSession;
 import hu.fitforfun.model.address.Address;
 import hu.fitforfun.model.instructor.TrainingSessionDetails;
+import hu.fitforfun.model.request.UserRegistrationModel;
+import hu.fitforfun.model.shop.Cart;
 import hu.fitforfun.model.user.Authority;
 import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.user.Role;
@@ -13,6 +19,7 @@ import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.*;
 import hu.fitforfun.services.InstructorService;
 import hu.fitforfun.services.TrainingSessionService;
+import hu.fitforfun.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -20,7 +27,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -33,6 +42,8 @@ public class InitialUserSetup {
     @Autowired
     UserRepository userRepository;
     @Autowired
+    UserService userService;
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     InstructorRepository instructorRepository;
@@ -44,44 +55,31 @@ public class InitialUserSetup {
     AddressRepository addressRepository;
     @Autowired
     CityRepository cityRepository;
-
+    @Autowired
+    TrainingSessionRepository trainingSessionRepository;
     @Autowired
     TrainingSessionDetailsRepository trainingSessionDetailsRepository;
 
     @EventListener
     @Transactional
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(ApplicationReadyEvent event) throws Exception {
+
         Authority readAuthority = createAuthority("READ_AUTHORITY");
         Authority writeAuthority = createAuthority("WRITE_AUTHORITY");
         Authority deleteAuthority = createAuthority("DELETE_AUTHORITY");
 
         Role roleUser = createRole("ROLE_USER", Arrays.asList(readAuthority, writeAuthority));
         Role roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
+        Role roleInstructor = createRole("ROLE_INSTRUCTOR", Arrays.asList(readAuthority, writeAuthority));
 
-        if (roleAdmin == null) return;
-        ContactData contactData = new ContactData();
-        contactData.setEmail("asd@asd.com");
-        contactData.setTelNumber("702175709");
+        userService.createUser(createUser("Korponay", "Mihály", "pass",
+                createContactData("heymisi99@gmail.com", "702175709"),
+                createAddress("Magyarország", "Pest", "Albertirsa", "Tó utca 26")), Roles.ROLE_ADMIN.name());
 
-        Address address = new Address();
-        address.setCountry("Magyarország");
-        address.setZipCode(2730);
-        address.setCity(cityRepository.findByCityNameIgnoreCase("albertirsa"));
-        address.setStreet("Tó utca 26");
 
-        User adminUser = new User();
-        adminUser.setContactData(contactData);
-        adminUser.setShippingAddress(address);
-        adminUser.setFirstName("admin");
-        adminUser.setLastName("admin");
-        adminUser.getContactData().setEmail("asd@asd.com");
-        adminUser.setEmailVerificationStatus(true);
-        adminUser.setPassword(bCryptPasswordEncoder.encode("pass"));
-        adminUser.setRoles(Arrays.asList(roleAdmin));
-        userRepository.save(adminUser);
-
-        Instructor instructor1 = createInstructor(adminUser);
-
+        userService.createUser(createUser("Korponay", "Mihály", "pass",
+                createContactData("korponay.mihaly@sonore.hu", "702175709"),
+                createAddress("Magyarország", "Pest", "Albertirsa", "Tó utca 26")), Roles.ROLE_USER.name());
 
     }
 
@@ -107,74 +105,40 @@ public class InitialUserSetup {
     }
 
     @Transactional
-    private Instructor createInstructor(User client) {
+    private ContactData createContactData(String email, String telNumber) {
+        return new ContactData(email, telNumber);
+    }
 
-        TrainingSession session = new TrainingSession();
-        session.setClient(client);
-        session.setDay(WeekDays.Péntek);
-        session.setSessionStart(15d);
-        session.setSessionEnd(16d);
-        TrainingSession session2 = new TrainingSession();
-        session2.setClient(client);
-        session2.setDay(WeekDays.Péntek);
-        session2.setSessionStart(16d);
-        session2.setSessionEnd(17d);
-        TrainingSession session3 = new TrainingSession();
-        session3.setClient(client);
-        session3.setDay(WeekDays.Péntek);
-        session3.setSessionStart(16d);
-        session3.setSessionEnd(17d);
-
-        ContactData contactData = new ContactData();
-        contactData.setTelNumber("702175709");
-        contactData.setEmail("heymisi99@gmail.com");
-
+    @Transactional
+    private Address createAddress(String country, String county, String city, String street) {
         Address address = new Address();
-        address.setCountry("Hungary");
-        address.setStreet("Pesti út 32");
-        address.setZipCode(2730);
-        address.setCounty("Pest");
-        address.setCity(cityRepository.findByCityNameIgnoreCase("Albertirsa"));
-        addressRepository.save(address);
+        address.setCountry(country);
+        address.setCounty(county);
+        address.setCity(cityRepository.findByCityNameIgnoreCase(city));
+        address.setStreet(street);
+        return address;
+    }
 
-        TrainingSessionDetails trainingSessionDetails = new TrainingSessionDetails();
-        trainingSessionDetails.setName("Csoportos kragmaga edzés");
-        trainingSessionDetails.setDurationMinutes(90);
-        trainingSessionDetails.setMonthlyPrice(10000);
-        trainingSessionDetails.setOccasionPrice(1500);
-        TrainingSessionDetails trainingSessionDetails2 = new TrainingSessionDetails();
-        trainingSessionDetails2.setName("Személyes kragmaga edzés");
-        trainingSessionDetails2.setDurationMinutes(60);
-        trainingSessionDetails2.setMonthlyPrice(10000);
-        trainingSessionDetails2.setOccasionPrice(3000);
+    @Transactional
+    private UserRegistrationModel createUser(String firstName, String lastName, String password, ContactData contactData, Address address) {
 
-        User user = new User();
-        user.getContactData().setEmail("misi@gmail.com");
-        user.setFirstName("instructor");
-        user.setLastName("instructor");
-        user.setPassword("pass");
-        user.setContactData(contactData);
-        user.setShippingAddress(address);
-        Instructor instructor = new Instructor();
-        instructor.setTitle("Személyi edző");
-        instructor.setBio("Segítek célod elérésében bármi áron, nincs lehetetlen csak tehetetlen");
-        instructor.setUser(user);
-        instructor.setTrainingSessionDetails(Arrays.asList(trainingSessionDetails,trainingSessionDetails2));
-        try {
-            instructor = instructorService.createInstructor(instructor);
-          //  instructorService.addTrainingSession(instructor.getId(),session3);
-            session.setInstructor(instructor);
-            session2.setInstructor(instructor);
-            session3.setInstructor(instructor);
-            trainingSessionService.addTrainingSessionToClient(client.getId(),session);
-            trainingSessionService.deleteTrainingSession(session.getId());
-            trainingSessionService.addTrainingSessionToClient(client.getId(),session2);
-            trainingSessionService.addTrainingSessionToClient(client.getId(),session3);
-        } catch (FitforfunException e) {
-            System.err.println(e.getErrorCode());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return instructor;
+        UserRegistrationModel user = new UserRegistrationModel();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPassword(password);
+        user.setShippingCountry(address.getCountry());
+        user.setShippingCounty(address.getCounty());
+        user.setShippingCity(address.getCity().getCityName());
+        user.setShippingStreet(address.getStreet());
+        user.setBillingCountry(address.getCountry());
+        user.setBillingCounty(address.getCounty());
+        user.setBillingCity(address.getCity().getCityName());
+        user.setBillingStreet(address.getCounty());
+
+        user.setTelNumber(contactData.getTelNumber());
+        user.setEmail(contactData.getEmail());
+        return user;
     }
 }
+
+*/

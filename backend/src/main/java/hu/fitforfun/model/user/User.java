@@ -2,17 +2,16 @@ package hu.fitforfun.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import hu.fitforfun.model.BaseEntity;
+import hu.fitforfun.model.Comment;
 import hu.fitforfun.model.ContactData;
-import hu.fitforfun.model.instructor.Instructor;
 import hu.fitforfun.model.instructor.TrainingSession;
 import hu.fitforfun.model.address.Address;
+import hu.fitforfun.model.shop.Cart;
 import hu.fitforfun.model.shop.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -23,7 +22,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Entity
-@Table(name = "user_table")
+@Table(name = "users")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
 public class User extends BaseEntity {
 
@@ -49,12 +48,16 @@ public class User extends BaseEntity {
     private Collection<Role> roles;
 
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "client")
+    @ManyToMany(mappedBy = "client")
     private List<TrainingSession> trainingSessions;
 
     @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "purchaser")
     private List<Transaction> transactions;
+
+    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "commenter")
+    private List<Comment> comments;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Address shippingAddress;
@@ -65,33 +68,21 @@ public class User extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private ContactData contactData;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Cart cart;
+
     @Column(name = "created")
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date created;
- /*
-
-    @Column(name = "email_address", nullable = false)
-    private String email;
-
-    @Column(name = "birth_date", nullable = false)
-    private String birthDate;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;*/
 
     public User addTrainingSession(TrainingSession session) {
-        session.setClient(this);
+        session.getClient().add(this);
         this.trainingSessions.add(session);
         return this;
     }
-    public User(){
+
+    public User() {
         this.contactData = new ContactData();
     }
 

@@ -6,7 +6,6 @@ import hu.fitforfun.model.address.Address;
 import hu.fitforfun.model.instructor.Instructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Entity
-@Table(name = "facility_table")
+@Table(name = "facility")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = SportFacility.class)
 public class SportFacility extends BaseEntity {
 
@@ -26,6 +25,7 @@ public class SportFacility extends BaseEntity {
     private Address address;
 
     @Lob
+    @Column(name = "description")
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -38,7 +38,7 @@ public class SportFacility extends BaseEntity {
     @JoinTable(name = "facility_available_sports",
             joinColumns = @JoinColumn(name = "facilities_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "sports_id", referencedColumnName = "id"))
-    private List<SportType> availableSports ;
+    private List<SportType> availableSports;
 
     @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "sportFacility")
@@ -47,29 +47,45 @@ public class SportFacility extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<Comment> comments;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sportFacility")
     private List<FacilityPricing> pricing;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Image image;
+    private Image profileImage;
+
+    @Lob
+    @Column(name = "profile_image_string")
+    private String profileImageString;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Image mapImage;
+
+    @Lob
+    @Column(name = "map_image_string")
+    private String mapImageString;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Rating rating;
 
     public SportFacility addComment(Comment comment) {
         comment.setSportFacility(this);
         this.comments.add(comment);
         return this;
     }
+
     public SportFacility addInstructor(Instructor instructor) {
         instructor.setSportFacility(this);
         this.instructors.add(instructor);
         return this;
     }
+
     public SportFacility addSport(SportType sportType) {
         sportType.getSportFacilities().add(this);
         this.availableSports.add(sportType);
         return this;
     }
-    public SportFacility(){
+
+    public SportFacility() {
         instructors = new ArrayList<>();
     }
-
 }

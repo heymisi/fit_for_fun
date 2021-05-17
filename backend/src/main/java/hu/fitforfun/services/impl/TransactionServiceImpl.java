@@ -1,17 +1,18 @@
 package hu.fitforfun.services.impl;
 
+import hu.fitforfun.enums.TransactionStatus;
 import hu.fitforfun.exception.ErrorCode;
 import hu.fitforfun.exception.FitforfunException;
-import hu.fitforfun.model.shop.ShopItem;
+import hu.fitforfun.model.shop.Cart;
 import hu.fitforfun.model.shop.Transaction;
+import hu.fitforfun.model.shop.TransactionItem;
 import hu.fitforfun.model.user.User;
 import hu.fitforfun.repositories.TransactionItemRepository;
 import hu.fitforfun.repositories.TransactionRepository;
+import hu.fitforfun.repositories.UserRepository;
+import hu.fitforfun.services.EmailService;
 import hu.fitforfun.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +29,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     TransactionItemRepository transactionItemRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    EmailService emailService;
+
     @Override
     public Transaction getTransactionById(Long id) throws FitforfunException {
 
@@ -39,12 +46,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> listTransactions(int page, int limit) {
-        if (page > 0) page--;
+    public List<Transaction> listTransactions() {
+        List<Transaction> returnValue = new ArrayList<>();
 
-        Pageable pageableRequest = PageRequest.of(page, limit);
-        Page<Transaction> transactions = transactionRepository.findAll(pageableRequest);
-        List<Transaction> returnValue = transactions.getContent();
+        transactionRepository.findAll().forEach(returnValue::add);
         return returnValue;
     }
 
@@ -54,25 +59,32 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction createTransaction(Transaction transaction) throws FitforfunException {
-        /*if(transaction.getTransactionItems() == null){
-            transaction.setTransactionItems(new ArrayList<>());
-        }*/
-        transaction.setSumTotal(0D);
-        transaction.getTransactionItems().forEach(transactionItem -> {
-          //  transactionItem.setPrice(transactionItem.getShopItem().getPrice().doubleValue() * transactionItem.getQuantity());
-            transactionItemRepository.save(transactionItem);
+    public Transaction createTransaction(Long userId) throws Exception {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (!optionalUser.isPresent()) {
+            throw new FitforfunException(ErrorCode.USER_NOT_EXISTS);
+        }
+        User user = optionalUser.get();
 
-            transaction.setSumTotal(transaction.getSumTotal() + transactionItem.getPrice());
+        Transaction createdTransaction = new Transaction();
+        createdTransaction.setPurchaser(user);
+        createdTransaction.setSumTotal(user.getCart().getTotalPrice().doubleValue());
+        createdTransaction.setStatus(TransactionStatus.PENDING);
+        createdTransaction.setTrackingNumber(UUID.randomUUID().toString());
+
+        user.getCart().getTransactionItems().forEach(transactionItem -> {
+            transactionItem.setCart(null);
+            createdTransaction.addItem(transactionItem);
         });
 
-        transaction.setTrackingNumber(UUID.randomUUID().toString());
-        return transactionRepository.save(transaction);
+        user.setCart(new Cart());
+        transactionRepository.save(createdTransaction);
+        emailService.sendOrderRecapMail(createdTransaction);
+        return createdTransaction;
     }
 
     @Override
     public void deleteTransaction(Long id) throws FitforfunException {
-
         Optional<Transaction> optionalTransaction = transactionRepository.findById(id);
         if (!optionalTransaction.isPresent()) {
             throw new FitforfunException(ErrorCode.TRANSACTION_NOT_EXISTS);
@@ -80,8 +92,15 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.delete(optionalTransaction.get());
     }
 
-    @Override
-    public Transaction updateTransaction(Long id, Transaction transaction) throws FitforfunException {
-        return null;
+    public List<TransactionItem> listTransactionItems() {
+        List<TransactionItem> returnValue = new ArrayList<>();
+        transactionItemRepository.findAll().forEach(returnValue::add);
+        return returnValue;
     }
+
+    @Override
+    public List<Transaction> listTransactionsByUser(Long id) {
+        return transactionRepository.findByPurchaserId(id);
+    }
+
 }

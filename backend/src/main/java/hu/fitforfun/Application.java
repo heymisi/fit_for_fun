@@ -1,28 +1,29 @@
 package hu.fitforfun;
 
 import hu.fitforfun.configuration.AppProperties;
-import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
+import hu.fitforfun.configuration.properties.PaypalProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.List;
-
-@SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = "hu.fitforfun")
-public class Application {
+@EnableConfigurationProperties(PaypalProperties.class)
+@SpringBootApplication
+public class Application extends SpringBootServletInitializer {
     public static void main(final String[] args) {
-        ApplicationContext context = SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder){
+        return applicationBuilder.sources(Application.class);
     }
 
     @Bean
