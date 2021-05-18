@@ -36,7 +36,8 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSec) throws Exception {
         httpSec.cors().and()
-                .csrf().disable().authorizeRequests()
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
                 .permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
@@ -46,7 +47,7 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
                 .permitAll()
                 .antMatchers("/h2/*").permitAll()
-                .anyRequest()
+                .antMatchers(HttpMethod.GET,"/users")
                 .permitAll()
                 .and()
                 .addFilter(getAuthenticationFilter())

@@ -16,8 +16,8 @@ import { CommentRequestModel } from '../common/comment-request-model';
 export class ProductService {
 
 
-  private baseUrl = 'http://localhost:8080/shop-items';
-  private categorytUrl = 'http://localhost:8080/item-categories';
+  private baseUrl = 'http://18.193.77.12:8080/fit-for-fun/shop-items';
+  private categorytUrl = 'http://18.193.77.12:8080/fit-for-fun/item-categories';
 
   constructor(private httpClient: HttpClient) { }
 

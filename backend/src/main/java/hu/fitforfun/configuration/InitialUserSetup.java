@@ -114,7 +114,7 @@ public class InitialUserSetup {
         Address address = new Address();
         address.setCountry(country);
         address.setCounty(county);
-        address.setCity(cityRepository.findByCityNameIgnoreCase(city));
+   //     address.setCity(cityRepository.findByCityNameIgnoreCase(city));
         address.setStreet(street);
         return address;
     }
@@ -128,11 +128,11 @@ public class InitialUserSetup {
         user.setPassword(password);
         user.setShippingCountry(address.getCountry());
         user.setShippingCounty(address.getCounty());
-        user.setShippingCity(address.getCity().getCityName());
+    //    user.setShippingCity(address.getCity().getCityName());
         user.setShippingStreet(address.getStreet());
         user.setBillingCountry(address.getCountry());
         user.setBillingCounty(address.getCounty());
-        user.setBillingCity(address.getCity().getCityName());
+  //      user.setBillingCity(address.getCity().getCityName());
         user.setBillingStreet(address.getCounty());
 
         user.setTelNumber(contactData.getTelNumber());
